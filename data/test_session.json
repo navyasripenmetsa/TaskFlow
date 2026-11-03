@@ -1,0 +1,274 @@
+{
+  "session_id": "session_001",
+
+  "source_device": {
+    "device_id": "laptop_01",
+    "device_type": "laptop"
+  },
+
+  "contexts": [
+    {
+      "context_id": "ctx_001",
+      "source": {
+        "tab_id": 101,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Google Flights - Delhi to Paris",
+        "url": "https://www.google.com/travel/flights",
+        "domain": "google.com",
+        "text": "Flights from New Delhi to Paris. Search round-trip flights for October 12 to October 20. Air France, Emirates and other airlines available. Compare departure times, duration and prices."
+      },
+      "state": {
+        "active": true,
+        "last_interaction": "2026-09-29T10:32:15Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://www.google.com/travel/flights"
+      }
+    },
+
+    {
+      "context_id": "ctx_002",
+      "source": {
+        "tab_id": 102,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Hotels in Paris - Booking.com",
+        "url": "https://www.booking.com/city/fr/paris.html",
+        "domain": "booking.com",
+        "text": "Paris hotels for October 12 to October 20. Compare accommodation by price, location, guest rating and facilities. Several hotels are available near central Paris."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T10:28:03Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://www.booking.com/city/fr/paris.html"
+      }
+    },
+
+    {
+      "context_id": "ctx_003",
+      "source": {
+        "tab_id": 103,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Paris Travel Guide - Attractions and Things to Do",
+        "url": "https://www.lonelyplanet.com/france/paris",
+        "domain": "lonelyplanet.com",
+        "text": "Paris travel guide covering major attractions, museums, neighborhoods and things to do. Popular attractions include the Eiffel Tower, Louvre Museum, Notre-Dame and Montmartre."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T10:21:44Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://www.lonelyplanet.com/france/paris"
+      }
+    },
+
+    {
+      "context_id": "ctx_004",
+      "source": {
+        "tab_id": 104,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Eiffel Tower - Google Maps",
+        "url": "https://www.google.com/maps/search/Eiffel+Tower",
+        "domain": "google.com",
+        "text": "Eiffel Tower in Paris. View location, directions, nearby places, restaurants and attractions."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T10:18:20Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://www.google.com/maps/search/Eiffel+Tower"
+      }
+    },
+
+    {
+      "context_id": "ctx_005",
+      "source": {
+        "tab_id": 105,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Paris Trip Budget - Google Sheets",
+        "url": "https://docs.google.com/spreadsheets/d/example",
+        "domain": "docs.google.com",
+        "text": "Paris trip budget. Flights: 52000 INR. Hotel: 60000 INR. Local transport: 10000 INR. Food: 20000 INR. Attractions: 10000 INR. Total estimated budget: 152000 INR."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T10:15:31Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://docs.google.com/spreadsheets/d/example"
+      }
+    },
+
+    {
+      "context_id": "ctx_006",
+      "source": {
+        "tab_id": 106,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Paris Weather Forecast - October",
+        "url": "https://www.weather.com/weather/monthly/l/Paris+France",
+        "domain": "weather.com",
+        "text": "Paris weather forecast for October. Average temperatures, rainfall probability and expected weather conditions during the month."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T10:11:12Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://www.weather.com/weather/monthly/l/Paris+France"
+      }
+    },
+
+    {
+      "context_id": "ctx_007",
+      "source": {
+        "tab_id": 107,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Python Tutorial for Beginners",
+        "url": "https://www.youtube.com/watch?v=python-example",
+        "domain": "youtube.com",
+        "text": "Python programming tutorial covering variables, functions, loops, lists and dictionaries for beginners."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T08:15:00Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://www.youtube.com/watch?v=python-example"
+      }
+    },
+
+    {
+      "context_id": "ctx_008",
+      "source": {
+        "tab_id": 108,
+        "window_id": 5
+      },
+      "content": {
+        "title": "GitHub - TaskFlow Project",
+        "url": "https://github.com/example/taskflow",
+        "domain": "github.com",
+        "text": "TaskFlow project repository containing source code for context extraction, task inference and cross-device task handoff."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T09:05:42Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://github.com/example/taskflow"
+      }
+    },
+
+    {
+      "context_id": "ctx_009",
+      "source": {
+        "tab_id": 109,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Paris Travel Vlog - YouTube",
+        "url": "https://www.youtube.com/watch?v=paris-vlog",
+        "domain": "youtube.com",
+        "text": "Travel vlog showing Paris attractions, restaurants, neighborhoods and recommended places to visit during a week-long trip."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T09:42:17Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://www.youtube.com/watch?v=paris-vlog"
+      }
+    },
+
+    {
+      "context_id": "ctx_010",
+      "source": {
+        "tab_id": 110,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Gmail - Flight Confirmation",
+        "url": "https://mail.google.com/mail/u/0/#inbox/example",
+        "domain": "mail.google.com",
+        "text": "Flight booking confirmation for New Delhi to Paris. Passenger information and booking details for October 12 departure and October 20 return."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T09:50:02Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://mail.google.com/mail/u/0/#inbox/example"
+      }
+    },
+
+    {
+      "context_id": "ctx_011",
+      "source": {
+        "tab_id": 111,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Amazon India - Laptop Deals",
+        "url": "https://www.amazon.in/s?k=laptops",
+        "domain": "amazon.in",
+        "text": "Laptop deals and discounts. Compare laptops by processor, memory, storage, display and price."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T07:45:11Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://www.amazon.in/s?k=laptops"
+      }
+    },
+
+    {
+      "context_id": "ctx_012",
+      "source": {
+        "tab_id": 112,
+        "window_id": 5
+      },
+      "content": {
+        "title": "Google Docs - Mobile Computing Project",
+        "url": "https://docs.google.com/document/d/example",
+        "domain": "docs.google.com",
+        "text": "Mobile and Pervasive Computing project notes. TaskFlow is a context-aware multi-application task handoff system that selects minimum sufficient context for cross-device task continuation."
+      },
+      "state": {
+        "active": false,
+        "last_interaction": "2026-09-29T09:18:27Z"
+      },
+      "reconstruction": {
+        "method": "url",
+        "target": "https://docs.google.com/document/d/example"
+      }
+    }
+  ]
+}

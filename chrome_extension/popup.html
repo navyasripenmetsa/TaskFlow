@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TaskFlow ContextItem Collector</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <main class="app">
+    <h1>TaskFlow Context Collector</h1>
+    <p class="subtitle">Capture tab metadata and visible page text in your team's ContextItem format.</p>
+
+    <button id="captureBtn" class="primary">Capture Context</button>
+    <button id="handoffBtn" class="primary">
+    Handoff Activity
+    </button>
+    <input
+      type="file"
+      id="handoffFile"
+      accept=".json,application/json"
+      hidden
+    />
+    <div id="status" class="status">Ready</div>
+    <div id="summary" class="summary">No capture yet.</div>
+    <div id="tabList" class="tab-list"></div>
+
+    <details>
+      <summary>Raw JSON</summary>
+      <pre id="jsonOutput">{}</pre>
+    </details>
+
+    <div class="actions">
+      <button id="copyBtn" disabled>Copy JSON</button>
+      <button id="downloadBtn" disabled>Download JSON</button>
+    </div>
+
+    <button id="clearBtn" class="secondary">Clear Activity History</button>
+  </main>
+
+  <script src="utils.js"></script>
+  <script src="context.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

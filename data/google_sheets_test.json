@@ -1,0 +1,616 @@
+{
+  "spreadsheet_title": "paris_trip_budget",
+  "sheets": [
+    {
+      "sheet_name": "Summary",
+      "values": [
+        [
+          "Paris Trip Budget"
+        ],
+        [],
+        [
+          "Trip inputs"
+        ],
+        [
+          "Number of nights",
+          "6",
+          "Example row: edit the yellow cells"
+        ],
+        [
+          "Number of travelers",
+          "1"
+        ],
+        [
+          "EUR to INR rate",
+          "95.00"
+        ],
+        [],
+        [
+          "Category",
+          "Planned (€)",
+          "Actual (€)",
+          "Variance (€)",
+          "Planned (₹)",
+          "% of plan"
+        ],
+        [
+          "Flights",
+          "€750.00",
+          "-",
+          "",
+          "₹71,250",
+          "30.3%"
+        ],
+        [
+          "Accommodation",
+          "€864.00",
+          "-",
+          "",
+          "₹82,080",
+          "34.9%"
+        ],
+        [
+          "Local transport",
+          "€61.00",
+          "-",
+          "",
+          "₹5,795",
+          "2.5%"
+        ],
+        [
+          "Food",
+          "€324.00",
+          "-",
+          "",
+          "₹30,780",
+          "13.1%"
+        ],
+        [
+          "Attractions",
+          "€110.00",
+          "-",
+          "",
+          "₹10,450",
+          "4.4%"
+        ],
+        [
+          "Shopping",
+          "€100.00",
+          "-",
+          "",
+          "₹9,500",
+          "4.0%"
+        ],
+        [
+          "Other",
+          "€270.00",
+          "-",
+          "",
+          "₹25,650",
+          "10.9%"
+        ],
+        [
+          "TOTAL",
+          "€2,479.00",
+          "-",
+          "",
+          "₹235,505",
+          "100.0%"
+        ],
+        [],
+        [
+          "Key figures"
+        ],
+        [
+          "Planned cost per person (€)",
+          "€2,479.00"
+        ],
+        [
+          "Planned cost per person per day (€)",
+          "€354.14"
+        ],
+        [
+          "Planned total (₹)",
+          "₹235,505"
+        ],
+        [],
+        [
+          "Days = nights + 1. Variance = actual minus planned, only for lines where an actual is entered (positive = over budget)."
+        ]
+      ],
+      "formulas": [
+        [
+          "Paris Trip Budget"
+        ],
+        [],
+        [
+          "Trip inputs"
+        ],
+        [
+          "Number of nights",
+          6,
+          "Example row: edit the yellow cells"
+        ],
+        [
+          "Number of travelers",
+          1
+        ],
+        [
+          "EUR to INR rate",
+          95
+        ],
+        [],
+        [
+          "Category",
+          "Planned (€)",
+          "Actual (€)",
+          "Variance (€)",
+          "Planned (₹)",
+          "% of plan"
+        ],
+        [
+          "Flights",
+          "=SUMIF(Expenses!$A$2:$A$17,A9,Expenses!$E$2:$E$17)",
+          "=SUMIF(Expenses!$A$2:$A$17,A9,Expenses!$F$2:$F$17)",
+          "=IF(C9=0,\"\",C9-SUMIFS(Expenses!$E$2:$E$17,Expenses!$A$2:$A$17,A9,Expenses!$F$2:$F$17,\"<>\"))",
+          "=B9*$B$6",
+          "=IF($B$16=0,0,B9/$B$16)"
+        ],
+        [
+          "Accommodation",
+          "=SUMIF(Expenses!$A$2:$A$17,A10,Expenses!$E$2:$E$17)",
+          "=SUMIF(Expenses!$A$2:$A$17,A10,Expenses!$F$2:$F$17)",
+          "=IF(C10=0,\"\",C10-SUMIFS(Expenses!$E$2:$E$17,Expenses!$A$2:$A$17,A10,Expenses!$F$2:$F$17,\"<>\"))",
+          "=B10*$B$6",
+          "=IF($B$16=0,0,B10/$B$16)"
+        ],
+        [
+          "Local transport",
+          "=SUMIF(Expenses!$A$2:$A$17,A11,Expenses!$E$2:$E$17)",
+          "=SUMIF(Expenses!$A$2:$A$17,A11,Expenses!$F$2:$F$17)",
+          "=IF(C11=0,\"\",C11-SUMIFS(Expenses!$E$2:$E$17,Expenses!$A$2:$A$17,A11,Expenses!$F$2:$F$17,\"<>\"))",
+          "=B11*$B$6",
+          "=IF($B$16=0,0,B11/$B$16)"
+        ],
+        [
+          "Food",
+          "=SUMIF(Expenses!$A$2:$A$17,A12,Expenses!$E$2:$E$17)",
+          "=SUMIF(Expenses!$A$2:$A$17,A12,Expenses!$F$2:$F$17)",
+          "=IF(C12=0,\"\",C12-SUMIFS(Expenses!$E$2:$E$17,Expenses!$A$2:$A$17,A12,Expenses!$F$2:$F$17,\"<>\"))",
+          "=B12*$B$6",
+          "=IF($B$16=0,0,B12/$B$16)"
+        ],
+        [
+          "Attractions",
+          "=SUMIF(Expenses!$A$2:$A$17,A13,Expenses!$E$2:$E$17)",
+          "=SUMIF(Expenses!$A$2:$A$17,A13,Expenses!$F$2:$F$17)",
+          "=IF(C13=0,\"\",C13-SUMIFS(Expenses!$E$2:$E$17,Expenses!$A$2:$A$17,A13,Expenses!$F$2:$F$17,\"<>\"))",
+          "=B13*$B$6",
+          "=IF($B$16=0,0,B13/$B$16)"
+        ],
+        [
+          "Shopping",
+          "=SUMIF(Expenses!$A$2:$A$17,A14,Expenses!$E$2:$E$17)",
+          "=SUMIF(Expenses!$A$2:$A$17,A14,Expenses!$F$2:$F$17)",
+          "=IF(C14=0,\"\",C14-SUMIFS(Expenses!$E$2:$E$17,Expenses!$A$2:$A$17,A14,Expenses!$F$2:$F$17,\"<>\"))",
+          "=B14*$B$6",
+          "=IF($B$16=0,0,B14/$B$16)"
+        ],
+        [
+          "Other",
+          "=SUMIF(Expenses!$A$2:$A$17,A15,Expenses!$E$2:$E$17)",
+          "=SUMIF(Expenses!$A$2:$A$17,A15,Expenses!$F$2:$F$17)",
+          "=IF(C15=0,\"\",C15-SUMIFS(Expenses!$E$2:$E$17,Expenses!$A$2:$A$17,A15,Expenses!$F$2:$F$17,\"<>\"))",
+          "=B15*$B$6",
+          "=IF($B$16=0,0,B15/$B$16)"
+        ],
+        [
+          "TOTAL",
+          "=SUM(B9:B15)",
+          "=SUM(C9:C15)",
+          "=IF(C16=0,\"\",SUM(D9:D15))",
+          "=SUM(E9:E15)",
+          "=SUM(F9:F15)"
+        ],
+        [],
+        [
+          "Key figures"
+        ],
+        [
+          "Planned cost per person (€)",
+          "=IF($B$5=0,0,B16/$B$5)"
+        ],
+        [
+          "Planned cost per person per day (€)",
+          "=IF(OR($B$5=0,$B$4=0),0,B16/$B$5/($B$4+1))"
+        ],
+        [
+          "Planned total (₹)",
+          "=E16"
+        ],
+        [],
+        [
+          "Days = nights + 1. Variance = actual minus planned, only for lines where an actual is entered (positive = over budget)."
+        ]
+      ]
+    },
+    {
+      "sheet_name": "Expenses",
+      "values": [
+        [
+          "Category",
+          "Item",
+          "Unit cost (€)",
+          "Qty",
+          "Planned (€)",
+          "Actual (€)",
+          "Variance (€)",
+          "Notes"
+        ],
+        [
+          "Flights",
+          "Return flight, India to Paris (per person)",
+          "€750.00",
+          "1",
+          "€750.00",
+          "",
+          "",
+          "Example estimate; replace with your quote"
+        ],
+        [
+          "Accommodation",
+          "Hotel/apartment per night",
+          "€140.00",
+          "6",
+          "€840.00",
+          "",
+          "",
+          "Per room per night; example estimate"
+        ],
+        [
+          "Accommodation",
+          "City tourist tax (per person per night)",
+          "€4.00",
+          "6",
+          "€24.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Local transport",
+          "Airport transfer (RER B / taxi), per person each way",
+          "€14.00",
+          "2",
+          "€28.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Local transport",
+          "Metro/RER weekly pass (per person)",
+          "€33.00",
+          "1",
+          "€33.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Food",
+          "Breakfast (per person per day)",
+          "€8.00",
+          "6",
+          "€48.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Food",
+          "Lunch (per person per day)",
+          "€16.00",
+          "6",
+          "€96.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Food",
+          "Dinner (per person per day)",
+          "€30.00",
+          "6",
+          "€180.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Attractions",
+          "Eiffel Tower summit ticket (per person)",
+          "€36.00",
+          "1",
+          "€36.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Attractions",
+          "Louvre (per person)",
+          "€22.00",
+          "1",
+          "€22.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Attractions",
+          "Seine river cruise (per person)",
+          "€17.00",
+          "1",
+          "€17.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Attractions",
+          "Versailles day trip (per person)",
+          "€35.00",
+          "1",
+          "€35.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Shopping",
+          "Souvenirs and gifts",
+          "€100.00",
+          "1",
+          "€100.00",
+          "",
+          "",
+          "Lump sum"
+        ],
+        [
+          "Other",
+          "Travel insurance (per person)",
+          "€30.00",
+          "1",
+          "€30.00",
+          "",
+          "",
+          "Example estimate"
+        ],
+        [
+          "Other",
+          "Visa fee (per person)",
+          "€90.00",
+          "1",
+          "€90.00",
+          "",
+          "",
+          "Example estimate; check current Schengen fee"
+        ],
+        [
+          "Other",
+          "Contingency / miscellaneous",
+          "€150.00",
+          "1",
+          "€150.00",
+          "",
+          "",
+          "Buffer"
+        ],
+        [
+          "TOTAL",
+          "",
+          "",
+          "",
+          "€2,479.00",
+          "-"
+        ],
+        [],
+        [
+          "Legend: blue = cells you edit (unit costs, quantities, actuals). Black = formulas. Leave Actual blank until you spend it."
+        ],
+        [
+          "Unit costs are rough placeholder estimates, not quotes. Replace them with your own prices."
+        ]
+      ],
+      "formulas": [
+        [
+          "Category",
+          "Item",
+          "Unit cost (€)",
+          "Qty",
+          "Planned (€)",
+          "Actual (€)",
+          "Variance (€)",
+          "Notes"
+        ],
+        [
+          "Flights",
+          "Return flight, India to Paris (per person)",
+          750,
+          "=Summary!$B$5",
+          "=C2*D2",
+          "",
+          "=IF(F2=\"\",\"\",F2-E2)",
+          "Example estimate; replace with your quote"
+        ],
+        [
+          "Accommodation",
+          "Hotel/apartment per night",
+          140,
+          "=Summary!$B$4",
+          "=C3*D3",
+          "",
+          "=IF(F3=\"\",\"\",F3-E3)",
+          "Per room per night; example estimate"
+        ],
+        [
+          "Accommodation",
+          "City tourist tax (per person per night)",
+          4,
+          "=Summary!$B$4*Summary!$B$5",
+          "=C4*D4",
+          "",
+          "=IF(F4=\"\",\"\",F4-E4)",
+          "Example estimate"
+        ],
+        [
+          "Local transport",
+          "Airport transfer (RER B / taxi), per person each way",
+          14,
+          "=2*Summary!$B$5",
+          "=C5*D5",
+          "",
+          "=IF(F5=\"\",\"\",F5-E5)",
+          "Example estimate"
+        ],
+        [
+          "Local transport",
+          "Metro/RER weekly pass (per person)",
+          33,
+          "=Summary!$B$5",
+          "=C6*D6",
+          "",
+          "=IF(F6=\"\",\"\",F6-E6)",
+          "Example estimate"
+        ],
+        [
+          "Food",
+          "Breakfast (per person per day)",
+          8,
+          "=Summary!$B$4*Summary!$B$5",
+          "=C7*D7",
+          "",
+          "=IF(F7=\"\",\"\",F7-E7)",
+          "Example estimate"
+        ],
+        [
+          "Food",
+          "Lunch (per person per day)",
+          16,
+          "=Summary!$B$4*Summary!$B$5",
+          "=C8*D8",
+          "",
+          "=IF(F8=\"\",\"\",F8-E8)",
+          "Example estimate"
+        ],
+        [
+          "Food",
+          "Dinner (per person per day)",
+          30,
+          "=Summary!$B$4*Summary!$B$5",
+          "=C9*D9",
+          "",
+          "=IF(F9=\"\",\"\",F9-E9)",
+          "Example estimate"
+        ],
+        [
+          "Attractions",
+          "Eiffel Tower summit ticket (per person)",
+          36,
+          "=Summary!$B$5",
+          "=C10*D10",
+          "",
+          "=IF(F10=\"\",\"\",F10-E10)",
+          "Example estimate"
+        ],
+        [
+          "Attractions",
+          "Louvre (per person)",
+          22,
+          "=Summary!$B$5",
+          "=C11*D11",
+          "",
+          "=IF(F11=\"\",\"\",F11-E11)",
+          "Example estimate"
+        ],
+        [
+          "Attractions",
+          "Seine river cruise (per person)",
+          17,
+          "=Summary!$B$5",
+          "=C12*D12",
+          "",
+          "=IF(F12=\"\",\"\",F12-E12)",
+          "Example estimate"
+        ],
+        [
+          "Attractions",
+          "Versailles day trip (per person)",
+          35,
+          "=Summary!$B$5",
+          "=C13*D13",
+          "",
+          "=IF(F13=\"\",\"\",F13-E13)",
+          "Example estimate"
+        ],
+        [
+          "Shopping",
+          "Souvenirs and gifts",
+          100,
+          1,
+          "=C14*D14",
+          "",
+          "=IF(F14=\"\",\"\",F14-E14)",
+          "Lump sum"
+        ],
+        [
+          "Other",
+          "Travel insurance (per person)",
+          30,
+          "=Summary!$B$5",
+          "=C15*D15",
+          "",
+          "=IF(F15=\"\",\"\",F15-E15)",
+          "Example estimate"
+        ],
+        [
+          "Other",
+          "Visa fee (per person)",
+          90,
+          "=Summary!$B$5",
+          "=C16*D16",
+          "",
+          "=IF(F16=\"\",\"\",F16-E16)",
+          "Example estimate; check current Schengen fee"
+        ],
+        [
+          "Other",
+          "Contingency / miscellaneous",
+          150,
+          1,
+          "=C17*D17",
+          "",
+          "=IF(F17=\"\",\"\",F17-E17)",
+          "Buffer"
+        ],
+        [
+          "TOTAL",
+          "",
+          "",
+          "",
+          "=SUM(E2:E17)",
+          "=SUM(F2:F17)",
+          "=IF(COUNT(F2:F17)=0,\"\",F18-SUMIF(F2:F17,\"<>\",E2:E17))"
+        ],
+        [],
+        [
+          "Legend: blue = cells you edit (unit costs, quantities, actuals). Black = formulas. Leave Actual blank until you spend it."
+        ],
+        [
+          "Unit costs are rough placeholder estimates, not quotes. Replace them with your own prices."
+        ]
+      ]
+    }
+  ]
+}

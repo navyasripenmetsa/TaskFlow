@@ -1,0 +1,46 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-width: 420px;
+  max-width: 420px;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f6f7f9;
+  color: #1f2937;
+}
+.app { padding: 18px; }
+h1 { margin: 0 0 6px; font-size: 20px; }
+.subtitle { margin: 0 0 16px; color: #667085; font-size: 13px; line-height: 1.45; }
+button {
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+button:disabled { opacity: .5; cursor: not-allowed; }
+.primary { width: 100%; background: #111827; color: white; border-color: #111827; }
+.secondary { width: 100%; margin-top: 12px; }
+.status { margin: 12px 0 4px; font-size: 13px; color: #475467; }
+.status.success { color: #067647; }
+.status.error { color: #b42318; }
+.status.loading { color: #175cd3; }
+.summary { margin-bottom: 10px; font-size: 13px; font-weight: 600; }
+.tab-list { display: grid; gap: 8px; max-height: 220px; overflow: auto; }
+.tab-card { padding: 10px; border: 1px solid #e4e7ec; border-radius: 8px; background: white; }
+.tab-title { font-size: 13px; font-weight: 700; line-height: 1.35; }
+.tab-domain, .tab-meta { margin-top: 4px; font-size: 12px; color: #667085; }
+details { margin-top: 14px; }
+summary { cursor: pointer; font-size: 13px; font-weight: 700; }
+pre {
+  max-height: 260px;
+  overflow: auto;
+  padding: 10px;
+  background: #101828;
+  color: #f2f4f7;
+  border-radius: 8px;
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
