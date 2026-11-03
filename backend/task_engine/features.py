@@ -1,3 +1,5 @@
+
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Set
@@ -16,6 +18,7 @@ class ContextFeatures:
     context_id: str
     semantic_text: str
     tokens: Set[str]
+    entities: Set[str]
     timestamp: datetime | None
     active: bool
 
@@ -40,6 +43,7 @@ class FeatureExtractor:
             context_id=context.context_id,
             semantic_text=self._build_semantic_text(context),
             tokens=self._extract_tokens(context),
+            entities=self._extract_entities(context),
             timestamp=self._parse_timestamp(
                 context.last_interaction
             ),
@@ -118,6 +122,44 @@ class FeatureExtractor:
             return
 
         tokens.add(token)
+
+    def _extract_entities(
+        self,
+        context: ContextItem,
+    ) -> Set[str]:
+
+        text = " ".join([
+            context.title,
+            context.domain,
+            context.text,
+        ])
+
+        # Common task-related words that are not named entities.
+        generic_words = {
+            "trip", "planning", "booking", "confirmation",
+            "travel", "search", "results", "weather",
+            "forecast", "guide", "vlog", "hotels",
+            "flight", "flights", "reservation",
+            "check", "find", "organize", "organizing",
+            "user", "google", "gmail",
+        }
+
+        entities: Set[str] = set()
+
+        # Extract individual capitalized words and acronyms.
+        pattern = r"\b[A-Z][a-z]{2,}\b|\b[A-Z]{2,}\b"
+
+        for match in re.findall(pattern, text):
+            entity = match.strip().lower()
+
+            if (
+                entity not in self.stopwords
+                and entity not in generic_words
+            ):
+                entities.add(entity)
+
+        return entities
+
 
     def _parse_timestamp(
         self,

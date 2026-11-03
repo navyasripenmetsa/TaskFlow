@@ -1,13 +1,11 @@
-
 from typing import List, Optional
-
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import silhouette_score
-
 from .models import TaskCandidate, ActivityCandidate, ContextItem
 from .embeddings import EmbeddingEngine
 from .task_label_generator import TaskLabelGenerator
+from .features import FeatureExtractor
 
 
 class ActivityInferenceEngine:
@@ -32,7 +30,11 @@ class ActivityInferenceEngine:
             )
 
         self.task_evidence = {}
-
+        self.feature_extractor = FeatureExtractor()
+        self.task_entities = {}
+        self.semantic_similarity = None
+        self.entity_similarity = None
+        self.combined_similarity = None
     # --------------------------------------------------
     # CONTEXT EVIDENCE
     # --------------------------------------------------
@@ -72,7 +74,34 @@ class ActivityInferenceEngine:
             self.task_evidence[task.task_id] = " ".join(
                 evidence_parts
             )
+    def _build_task_entities(
+        self,
+        tasks: List[TaskCandidate],
+        contexts: Optional[List[ContextItem]],
+    ) -> None:
 
+        context_lookup = {
+            context.context_id: context
+            for context in (contexts or [])
+        }
+
+        self.task_entities = {}
+
+        for task in tasks:
+
+            entities: set[str] = set()
+
+            for context_id in task.context_ids:
+
+                context = context_lookup.get(context_id)
+
+                if context is None:
+                    continue
+
+                features = self.feature_extractor.extract(context)
+                entities.update(features.entities)
+
+            self.task_entities[task.task_id] = entities
     # --------------------------------------------------
     # TASK REPRESENTATION
     # --------------------------------------------------
@@ -158,7 +187,51 @@ class ActivityInferenceEngine:
 
         np.fill_diagonal(semantic, 1.0)
 
-        return semantic
+        entity_similarity = np.zeros((count, count))
+
+        for i in range(count):
+            for j in range(count):
+
+                entities_a = self.task_entities.get(
+                    tasks[i].task_id, set()
+                )
+
+                entities_b = self.task_entities.get(
+                    tasks[j].task_id, set()
+                )
+
+                if i == j:
+                    entity_similarity[i, j] = 1.0
+                    continue
+
+                if entities_a and entities_b:
+                    intersection = entities_a & entities_b
+                    union = entities_a | entities_b
+
+                    entity_similarity[i, j] = (
+                        len(intersection) / len(union)
+                    )
+
+        combined = 0.9 * semantic + 0.1 * entity_similarity
+
+        for i in range(count):
+            for j in range(count):
+                entities_a = self.task_entities.get(
+                    tasks[i].task_id, set()
+                )
+                entities_b = self.task_entities.get(
+                    tasks[j].task_id, set()
+                )
+
+                if not entities_a or not entities_b:
+                    combined[i, j] = semantic[i, j]
+
+        np.fill_diagonal(combined, 1.0)
+        self.semantic_similarity = semantic.copy()
+        self.entity_similarity = entity_similarity.copy()
+        self.combined_similarity = combined.copy()
+
+        return combined
 
     # --------------------------------------------------
     # ADAPTIVE ACTIVITY CLUSTERING
@@ -180,7 +253,7 @@ class ActivityInferenceEngine:
         if task_count == 2:
             # Silhouette-based selection is not meaningful
             # for two tasks, so retain them in one activity.
-            return [[0, 1]]
+            return [[0],[1]]
 
         # Convert similarity into distance.
         distance_matrix = np.clip(
@@ -275,7 +348,7 @@ class ActivityInferenceEngine:
             return []
 
         self._build_task_evidence(tasks, contexts)
-
+        self._build_task_entities(tasks, contexts)
         if len(tasks) == 1:
             return [
                 self._create_activity(tasks, 1)
@@ -299,17 +372,76 @@ class ActivityInferenceEngine:
 
         print("\nTASK GOAL SIMILARITIES:")
 
+        print("\nSIMILARITY COMPONENT DIAGNOSTICS:")
+
         for i in range(len(tasks)):
             for j in range(i + 1, len(tasks)):
 
                 print(
-                    f"{tasks[i].label} - "
-                    f"{tasks[j].label}: "
-                    f"{similarity_matrix[i, j]:.3f}"
+                    f"\n{tasks[i].label} - {tasks[j].label}"
                 )
 
-        # Automatically determine the activity clusters.
-        clusters = self._cluster_tasks(similarity_matrix)
+                print(
+                    f"  Semantic: "
+                    f"{self.semantic_similarity[i, j]:.3f}"
+                )
+
+                print(
+                    f"  Entity: "
+                    f"{self.entity_similarity[i, j]:.3f}"
+                )
+
+                print(
+                    f"  Combined: "
+                    f"{self.combined_similarity[i, j]:.3f}"
+                )
+
+        # Determine activity clusters.
+        # Two tasks require an explicit LLM grouping decision because
+        # silhouette scoring cannot select a meaningful partition.
+        activity_decision = None
+
+        if len(tasks) == 2:
+            try:
+                if self.label_generator is None:
+                    raise RuntimeError(
+                        "Activity labeling is unavailable."
+                    )
+
+                activity_decision = (
+                    self.label_generator.generate_activity(
+                        self._build_activity_summary(tasks)
+                    )
+                )
+
+                if not isinstance(
+                    activity_decision.get("is_same_activity"),
+                    bool,
+                ):
+                    raise ValueError(
+                        "Invalid is_same_activity decision."
+                    )
+
+                if activity_decision["is_same_activity"]:
+                    clusters = [[0, 1]]
+                else:
+                    clusters = [[0], [1]]
+
+                print(
+                    "LLM activity grouping decision: "
+                    f"{activity_decision['is_same_activity']}"
+                )
+
+            except Exception as error:
+                print(
+                    "Two-task activity decision failed. "
+                    f"Keeping tasks separate: {error}"
+                )
+                activity_decision = None
+                clusters = [[0], [1]]
+
+        else:
+            clusters = self._cluster_tasks(similarity_matrix)
 
         print(
             f"\nDYNAMIC CLUSTERING SELECTED "
@@ -325,14 +457,28 @@ class ActivityInferenceEngine:
                 for index in cluster
             ]
 
+            # Reuse the LLM response if it already labeled
+            # the merged two-task activity.
+            cached_result = None
+
+            if (
+                len(tasks) == 2
+                and cluster == [0, 1]
+                and activity_decision is not None
+                and activity_decision["is_same_activity"]
+            ):
+                cached_result = activity_decision
+
             activities.append(
                 self._create_activity(
                     cluster_tasks,
                     number,
+                    activity_result=cached_result,
                 )
             )
 
         return activities
+        
 
     # --------------------------------------------------
     # ACTIVITY CREATION
@@ -342,6 +488,7 @@ class ActivityInferenceEngine:
         self,
         tasks: List[TaskCandidate],
         activity_number: int,
+        activity_result: Optional[dict]=None,
     ) -> ActivityCandidate:
 
         label = "Related activities"
@@ -350,7 +497,12 @@ class ActivityInferenceEngine:
             "Continue the related tasks in this activity."
         )
 
-        if self.label_generator is not None:
+        if activity_result is not None:
+
+            label = activity_result["task_label"]
+            description = activity_result["task_goal"]
+
+        elif self.label_generator is not None:
 
             try:
 

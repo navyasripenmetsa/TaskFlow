@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 from .models import (
     SelectedState,
     TaskCandidate,
+    ActivityCandidate,
 )
 
 
@@ -38,7 +39,20 @@ class HandoffPackage:
 
     def to_dict(self) -> dict:
         return asdict(self)
+@dataclass
+class ActivityHandoffPackage:
+    """
+    Complete activity-level handoff package.
+    """
 
+    activity_id: str
+    activity_label: str
+    activity_description: str
+    task_ids: List[str]
+    contexts: List[HandoffState]
+
+    def to_dict(self) -> dict:
+        return asdict(self)
 
 class HandoffBuilder:
 
@@ -91,5 +105,43 @@ class HandoffBuilder:
             task_id=task.task_id,
             task_label=task.label,
             task_description=task.description,
+            contexts=handoff_states,
+        )
+
+    def build_activity(
+        self,
+        activity: ActivityCandidate,
+        selected_states: List[SelectedState],
+    ) -> ActivityHandoffPackage:
+
+        activity_context_ids = set(activity.context_ids)
+
+        activity_states = [
+            selected_state
+            for selected_state in selected_states
+            if selected_state.context_id in activity_context_ids
+        ]
+
+        handoff_states = []
+
+        for selected_state in activity_states:
+
+            handoff_states.append(
+                HandoffState(
+                    context_id=selected_state.context_id,
+                    representation_id=selected_state.representation_id,
+                    reconstruction_method=selected_state.method,
+                    reconstruction_target=selected_state.target,
+                    state=selected_state.state,
+                    cost=selected_state.cost,
+                    sufficiency_score=selected_state.sufficiency_score,
+                )
+            )
+
+        return ActivityHandoffPackage(
+            activity_id=activity.activity_id,
+            activity_label=activity.label,
+            activity_description=activity.description,
+            task_ids=activity.task_ids,
             contexts=handoff_states,
         )

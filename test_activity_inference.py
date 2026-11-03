@@ -64,8 +64,10 @@ for activity in activities:
     activity_export = {
         "activity_id": activity.activity_id,
         "activity_label": activity.label,
-        "handoff_packages": []
+        "handoff_packages": [],
+        "activity_handoff_package": None,
     }
+    activity_selected_states = []
     for task_id in activity.task_ids:
 
         # Find the corresponding individual task.
@@ -88,7 +90,9 @@ for activity in activities:
                 task_contexts
             )
         )
-
+        activity_selected_states.extend(
+            selection_report["selected_states"]
+        )
         print(
             "Selected states:",
             selection_report["selected_state_count"]
@@ -134,6 +138,24 @@ for activity in activities:
                 indent=2,
                 ensure_ascii=False
             ))
+        # Build one unified handoff package for the entire activity.
+    activity_package = handoff_builder.build_activity(
+        activity,
+        activity_selected_states,
+    )
+
+    activity_export["activity_handoff_package"] = (
+        activity_package.to_dict()
+    )
+
+    print("\nUNIFIED ACTIVITY HANDOFF PACKAGE:")
+    print(
+        json.dumps(
+            activity_package.to_dict(),
+            indent=2,
+            ensure_ascii=False,
+        )
+    )        
     export_data["activities"].append(activity_export)
 # Verify that no contexts were lost or duplicated.
 assigned_contexts = [
