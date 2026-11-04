@@ -20,9 +20,6 @@ class UrlReconstructor(
         }
 
         val intent = Intent(Intent.ACTION_VIEW, uri)
-        if (intent.resolveActivity(context.packageManager) == null) {
-            return OpenResult.NoBrowser
-        }
 
         return try {
             context.startActivity(intent)
