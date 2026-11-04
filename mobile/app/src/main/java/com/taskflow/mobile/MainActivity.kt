@@ -9,10 +9,12 @@ import com.taskflow.mobile.data.HandoffParser
 import com.taskflow.mobile.model.ActivityHandoff
 import com.taskflow.mobile.model.HandoffContext
 import com.taskflow.mobile.model.TaskHandoff
+import com.taskflow.mobile.reconstruction.UrlReconstructor
 
 class MainActivity : Activity() {
     private lateinit var statusText: TextView
     private lateinit var activityContent: LinearLayout
+    private lateinit var urlReconstructor: UrlReconstructor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +22,7 @@ class MainActivity : Activity() {
 
         statusText = findViewById(R.id.statusText)
         activityContent = findViewById(R.id.activityContent)
+        urlReconstructor = UrlReconstructor(this)
         findViewById<Button>(R.id.loadSampleButton).setOnClickListener {
             loadSamplePackage()
         }
@@ -87,7 +90,60 @@ class MainActivity : Activity() {
             12f,
             false
         )
+        addOpenAction(card, context)
         activityContent.addView(card)
+    }
+
+    private fun addOpenAction(parent: LinearLayout, context: HandoffContext) {
+        val openButton = Button(this).apply {
+            text = getString(R.string.open_context)
+            setOnClickListener {
+                when (val result = urlReconstructor.open(context)) {
+                    UrlReconstructor.OpenResult.Opened -> {
+                        statusText.setText(R.string.browser_opened)
+                    }
+                    UrlReconstructor.OpenResult.InvalidUrl -> {
+                        statusText.setText(R.string.invalid_context_url)
+                    }
+                    UrlReconstructor.OpenResult.NoBrowser -> {
+                        statusText.setText(R.string.no_browser_available)
+                    }
+                    is UrlReconstructor.OpenResult.NotSupported -> {
+                        statusText.text = getString(
+                            R.string.reconstruction_not_supported,
+                            result.method
+                        )
+                    }
+                }
+            }
+        }
+
+        val supportedMethod = context.reconstructionMethod in SUPPORTED_METHODS
+        val validUrl = isHttpUrl(context.reconstructionTarget)
+        when {
+            supportedMethod && validUrl -> {
+                parent.addView(openButton)
+            }
+            !supportedMethod -> {
+                addCardText(
+                    parent,
+                    getString(
+                        R.string.reconstruction_not_supported,
+                        context.reconstructionMethod
+                    ),
+                    12f,
+                    false
+                )
+            }
+            else -> {
+                addCardText(parent, getString(R.string.invalid_context_url), 12f, false)
+            }
+        }
+    }
+
+    private fun isHttpUrl(target: String): Boolean {
+        val uri = android.net.Uri.parse(target)
+        return uri.scheme in HTTP_SCHEMES && !uri.host.isNullOrBlank()
     }
 
     private fun addText(value: String, size: Float, bold: Boolean) {
@@ -121,5 +177,11 @@ class MainActivity : Activity() {
 
     private companion object {
         const val SAMPLE_FILE = "activity_handoff.json"
+        val HTTP_SCHEMES = setOf("http", "https")
+        val SUPPORTED_METHODS = setOf(
+            "url",
+            "url_with_metadata",
+            "url_with_content"
+        )
     }
 }

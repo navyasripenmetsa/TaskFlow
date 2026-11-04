@@ -9,4 +9,9 @@
     <string name="activity_id">Activity ID: %1$s</string>
     <string name="context_count">Selected contexts: %1$d</string>
     <string name="context_details">Context %1$s • %2$s • sufficiency %3$.2f</string>
+    <string name="open_context">Open in browser</string>
+    <string name="browser_opened">Browser opened</string>
+    <string name="invalid_context_url">This context does not contain a valid HTTP(S) URL.</string>
+    <string name="no_browser_available">No browser is available to open this URL.</string>
+    <string name="reconstruction_not_supported">Reconstruction method not supported yet: %1$s</string>
 </resources>
