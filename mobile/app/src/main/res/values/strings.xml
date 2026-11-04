@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TaskFlow Mobile</string>
+    <string name="load_sample_package">Load sample handoff package</string>
+    <string name="loading_package">Loading handoff package…</string>
+    <string name="package_loaded">Loaded %1$d activity(ies)</string>
+    <string name="package_error">Could not load package: %1$s</string>
+    <string name="unknown_error">Unknown parsing error</string>
+    <string name="activity_id">Activity ID: %1$s</string>
+    <string name="context_count">Selected contexts: %1$d</string>
+    <string name="context_details">Context %1$s • %2$s • sufficiency %3$.2f</string>
 </resources>

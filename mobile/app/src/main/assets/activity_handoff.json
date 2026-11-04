@@ -1,0 +1,217 @@
+{
+  "activities": [
+    {
+      "activity_id": "activity_001",
+      "activity_label": "Planning a Paris trip",
+      "handoff_packages": [
+        {
+          "task_id": "task_001",
+          "task_label": "Planning a Paris trip",
+          "task_description": "Organize travel details and activities for a trip to Paris, including summit access, dining, weather, and guides.",
+          "contexts": [
+            {
+              "context_id": "ctx_002",
+              "representation_id": "ctx_002_metadata",
+              "reconstruction_method": "url_with_metadata",
+              "reconstruction_target": "https://www.booking.com/searchresults.html?ss=Paris%2C+Ile+de+France%2C+France&efdco=1&label=gen173nr-10CAEoggI46AdIM1gEaGyIAQGYATO4ARfIAQzYAQPoAQH4AQGIAgGoAgG4ArH6pNcGwAIB0gIkZGVjZWJmNzgtNGQ1OS00YTI4LWFiYzktNmFlZGE5NDFmNjk52AIB4AIB&aid=304142&lang=en-us&sb=1&src_elem=sb&src=index&dest_id=-1456928&dest_type=city&ac_meta=GhBkNGIyMGM5OGI5MjMwMjMxIAAoATICZW46BVBhcmlz&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=d4b20c98b9230231&checkin=2026-11-12&checkout=2026-11-20&group_adults=2&no_rooms=1&group_children=0",
+              "state": {
+                "url": "https://www.booking.com/searchresults.html?ss=Paris%2C+Ile+de+France%2C+France&efdco=1&label=gen173nr-10CAEoggI46AdIM1gEaGyIAQGYATO4ARfIAQzYAQPoAQH4AQGIAgGoAgG4ArH6pNcGwAIB0gIkZGVjZWJmNzgtNGQ1OS00YTI4LWFiYzktNmFlZGE5NDFmNjk52AIB4AIB&aid=304142&lang=en-us&sb=1&src_elem=sb&src=index&dest_id=-1456928&dest_type=city&ac_meta=GhBkNGIyMGM5OGI5MjMwMjMxIAAoATICZW46BVBhcmlz&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=d4b20c98b9230231&checkin=2026-11-12&checkout=2026-11-20&group_adults=2&no_rooms=1&group_children=0",
+                "title": "Booking.com: Hotels in Paris. Book your hotel now!",
+                "domain": "booking.com"
+              },
+              "cost": 1.5,
+              "sufficiency_score": 1.0
+            },
+            {
+              "context_id": "ctx_003",
+              "representation_id": "ctx_003_metadata",
+              "reconstruction_method": "url_with_metadata",
+              "reconstruction_target": "https://www.google.com/maps/place/Eiffel+Tower/@48.8583701,2.2944813,17z/data=!3m1!4b1!4m6!3m5!1s0x47e66e2964e34e2d:0x8ddca9ee380ef7e0!8m2!3d48.8583701!4d2.2944813!16zL20vMDJqODE?entry=ttu&g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D",
+              "state": {
+                "url": "https://www.google.com/maps/place/Eiffel+Tower/@48.8583701,2.2944813,17z/data=!3m1!4b1!4m6!3m5!1s0x47e66e2964e34e2d:0x8ddca9ee380ef7e0!8m2!3d48.8583701!4d2.2944813!16zL20vMDJqODE?entry=ttu&g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D",
+                "title": "Eiffel Tower - Google Maps",
+                "domain": "google.com"
+              },
+              "cost": 1.5,
+              "sufficiency_score": 1.0
+            },
+            {
+              "context_id": "ctx_004",
+              "representation_id": "ctx_004_metadata",
+              "reconstruction_method": "url_with_metadata",
+              "reconstruction_target": "https://www.google.com/search?q=Paris+travel+guide&oq=Paris+travel+guide&gs_lcrp=EgZjaHJvbWUqCAgAEEUYJxg7MggIABBFGCcYOzIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIHCAUQABiABDIHCAYQABiABDIHCAcQABiABDINCAgQABiGAxiABBiKBTIHCAkQABjvBdIBCTQ4NTJqMWoxNagCCLACAQ&sourceid=chrome&source=chrome.rb&ie=UTF-8#cobssid=s",
+              "state": {
+                "url": "https://www.google.com/search?q=Paris+travel+guide&oq=Paris+travel+guide&gs_lcrp=EgZjaHJvbWUqCAgAEEUYJxg7MggIABBFGCcYOzIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIHCAUQABiABDIHCAYQABiABDIHCAcQABiABDINCAgQABiGAxiABBiKBTIHCAkQABjvBdIBCTQ4NTJqMWoxNagCCLACAQ&sourceid=chrome&source=chrome.rb&ie=UTF-8#cobssid=s",
+                "title": "Paris travel guide - Google Search",
+                "domain": "google.com"
+              },
+              "cost": 1.5,
+              "sufficiency_score": 1.0
+            },
+            {
+              "context_id": "ctx_005",
+              "representation_id": "ctx_005_metadata",
+              "reconstruction_method": "url_with_metadata",
+              "reconstruction_target": "https://www.google.com/search?q=paris+weather&oq=Paris+weaher&gs_lcrp=EgZjaHJvbWUqEAgBEAAYkQIYsQMYgAQYigUyBggAEEUYOTIQCAEQABiRAhixAxiABBiKBTIQCAIQABiRAhixAxiABBiKBTINCAMQABiRAhiABBiKBTINCAQQABiRAhiABBiKBTINCAUQABiRAhiABBiKBTILCAYQABgKGAsYgAQyCwgHEAAYChgLGIAEMgsICBAAGAoYCxiABDILCAkQABgKGAsYgATSAQk0NDEwajFqMTWoAgiwAgHxBa334OmjoL13&sourceid=chrome&source=chrome.rb&ie=UTF-8",
+              "state": {
+                "url": "https://www.google.com/search?q=paris+weather&oq=Paris+weaher&gs_lcrp=EgZjaHJvbWUqEAgBEAAYkQIYsQMYgAQYigUyBggAEEUYOTIQCAEQABiRAhixAxiABBiKBTIQCAIQABiRAhixAxiABBiKBTINCAMQABiRAhiABBiKBTINCAQQABiRAhiABBiKBTINCAUQABiRAhiABBiKBTILCAYQABgKGAsYgAQyCwgHEAAYChgLGIAEMgsICBAAGAoYCxiABDILCAkQABgKGAsYgATSAQk0NDEwajFqMTWoAgiwAgHxBa334OmjoL13&sourceid=chrome&source=chrome.rb&ie=UTF-8",
+                "title": "paris weather - Google Search",
+                "domain": "google.com"
+              },
+              "cost": 1.5,
+              "sufficiency_score": 1.0
+            },
+            {
+              "context_id": "ctx_006",
+              "representation_id": "ctx_006_metadata",
+              "reconstruction_method": "url_with_metadata",
+              "reconstruction_target": "https://www.youtube.com/results?search_query=Paris+travel+vlog",
+              "state": {
+                "url": "https://www.youtube.com/results?search_query=Paris+travel+vlog",
+                "title": "Paris travel vlog - YouTube",
+                "domain": "youtube.com"
+              },
+              "cost": 1.5,
+              "sufficiency_score": 1.0
+            }
+          ]
+        },
+        {
+          "task_id": "task_002",
+          "task_label": "Flight Booking",
+          "task_description": "Confirm a flight reservation after searching and booking.",
+          "contexts": [
+            {
+              "context_id": "ctx_001",
+              "representation_id": "ctx_001_metadata",
+              "reconstruction_method": "url_with_metadata",
+              "reconstruction_target": "https://www.google.com/travel/flights/search?tfs=CBwQAhojEgoyMDI2LTExLTEyagcIARIDREVMcgwIAxIIL20vMDVxdGoaIxIKMjAyNi0xMS0yMGoMCAMSCC9tLzA1cXRqcgcIARIDREVMQAFIAXABggELCP___________wGYAQE&hl=en&gl=IN",
+              "state": {
+                "url": "https://www.google.com/travel/flights/search?tfs=CBwQAhojEgoyMDI2LTExLTEyagcIARIDREVMcgwIAxIIL20vMDVxdGoaIxIKMjAyNi0xMS0yMGoMCAMSCC9tLzA1cXRqcgcIARIDREVMQAFIAXABggELCP___________wGYAQE&hl=en&gl=IN",
+                "title": "New Delhi to Paris | Google Flights",
+                "domain": "google.com"
+              },
+              "cost": 1.5,
+              "sufficiency_score": 1.0
+            },
+            {
+              "context_id": "ctx_007",
+              "representation_id": "ctx_007_metadata",
+              "reconstruction_method": "url_with_metadata",
+              "reconstruction_target": "https://mail.google.com/mail/u/0/#all/FMfcgzQjggrPBMMsxMvwnjKrcLwKXlzm",
+              "state": {
+                "url": "https://mail.google.com/mail/u/0/#all/FMfcgzQjggrPBMMsxMvwnjKrcLwKXlzm",
+                "title": "Flight Booking Confirmed – New Delhi to Paris | 12 November 2026 - outworkthepast@gmail.com - Gmail",
+                "domain": "mail.google.com"
+              },
+              "cost": 1.5,
+              "sufficiency_score": 1.0
+            }
+          ]
+        }
+      ],
+      "activity_handoff_package": {
+        "activity_id": "activity_001",
+        "activity_label": "Planning a Paris trip",
+        "activity_description": "Organizing travel details and booking flights for a Paris trip.",
+        "task_ids": [
+          "task_001",
+          "task_002"
+        ],
+        "contexts": [
+          {
+            "context_id": "ctx_002",
+            "representation_id": "ctx_002_metadata",
+            "reconstruction_method": "url_with_metadata",
+            "reconstruction_target": "https://www.booking.com/searchresults.html?ss=Paris%2C+Ile+de+France%2C+France&efdco=1&label=gen173nr-10CAEoggI46AdIM1gEaGyIAQGYATO4ARfIAQzYAQPoAQH4AQGIAgGoAgG4ArH6pNcGwAIB0gIkZGVjZWJmNzgtNGQ1OS00YTI4LWFiYzktNmFlZGE5NDFmNjk52AIB4AIB&aid=304142&lang=en-us&sb=1&src_elem=sb&src=index&dest_id=-1456928&dest_type=city&ac_meta=GhBkNGIyMGM5OGI5MjMwMjMxIAAoATICZW46BVBhcmlz&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=d4b20c98b9230231&checkin=2026-11-12&checkout=2026-11-20&group_adults=2&no_rooms=1&group_children=0",
+            "state": {
+              "url": "https://www.booking.com/searchresults.html?ss=Paris%2C+Ile+de+France%2C+France&efdco=1&label=gen173nr-10CAEoggI46AdIM1gEaGyIAQGYATO4ARfIAQzYAQPoAQH4AQGIAgGoAgG4ArH6pNcGwAIB0gIkZGVjZWJmNzgtNGQ1OS00YTI4LWFiYzktNmFlZGE5NDFmNjk52AIB4AIB&aid=304142&lang=en-us&sb=1&src_elem=sb&src=index&dest_id=-1456928&dest_type=city&ac_meta=GhBkNGIyMGM5OGI5MjMwMjMxIAAoATICZW46BVBhcmlz&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=d4b20c98b9230231&checkin=2026-11-12&checkout=2026-11-20&group_adults=2&no_rooms=1&group_children=0",
+              "title": "Booking.com: Hotels in Paris. Book your hotel now!",
+              "domain": "booking.com"
+            },
+            "cost": 1.5,
+            "sufficiency_score": 1.0
+          },
+          {
+            "context_id": "ctx_003",
+            "representation_id": "ctx_003_metadata",
+            "reconstruction_method": "url_with_metadata",
+            "reconstruction_target": "https://www.google.com/maps/place/Eiffel+Tower/@48.8583701,2.2944813,17z/data=!3m1!4b1!4m6!3m5!1s0x47e66e2964e34e2d:0x8ddca9ee380ef7e0!8m2!3d48.8583701!4d2.2944813!16zL20vMDJqODE?entry=ttu&g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D",
+            "state": {
+              "url": "https://www.google.com/maps/place/Eiffel+Tower/@48.8583701,2.2944813,17z/data=!3m1!4b1!4m6!3m5!1s0x47e66e2964e34e2d:0x8ddca9ee380ef7e0!8m2!3d48.8583701!4d2.2944813!16zL20vMDJqODE?entry=ttu&g_ep=EgoyMDI2MTAyOC4wIKXMDSoASAFQAw%3D%3D",
+              "title": "Eiffel Tower - Google Maps",
+              "domain": "google.com"
+            },
+            "cost": 1.5,
+            "sufficiency_score": 1.0
+          },
+          {
+            "context_id": "ctx_004",
+            "representation_id": "ctx_004_metadata",
+            "reconstruction_method": "url_with_metadata",
+            "reconstruction_target": "https://www.google.com/search?q=Paris+travel+guide&oq=Paris+travel+guide&gs_lcrp=EgZjaHJvbWUqCAgAEEUYJxg7MggIABBFGCcYOzIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIHCAUQABiABDIHCAYQABiABDIHCAcQABiABDINCAgQABiGAxiABBiKBTIHCAkQABjvBdIBCTQ4NTJqMWoxNagCCLACAQ&sourceid=chrome&source=chrome.rb&ie=UTF-8#cobssid=s",
+            "state": {
+              "url": "https://www.google.com/search?q=Paris+travel+guide&oq=Paris+travel+guide&gs_lcrp=EgZjaHJvbWUqCAgAEEUYJxg7MggIABBFGCcYOzIHCAEQABiABDIHCAIQABiABDIHCAMQABiABDIHCAQQABiABDIHCAUQABiABDIHCAYQABiABDIHCAcQABiABDINCAgQABiGAxiABBiKBTIHCAkQABjvBdIBCTQ4NTJqMWoxNagCCLACAQ&sourceid=chrome&source=chrome.rb&ie=UTF-8#cobssid=s",
+              "title": "Paris travel guide - Google Search",
+              "domain": "google.com"
+            },
+            "cost": 1.5,
+            "sufficiency_score": 1.0
+          },
+          {
+            "context_id": "ctx_005",
+            "representation_id": "ctx_005_metadata",
+            "reconstruction_method": "url_with_metadata",
+            "reconstruction_target": "https://www.google.com/search?q=paris+weather&oq=Paris+weaher&gs_lcrp=EgZjaHJvbWUqEAgBEAAYkQIYsQMYgAQYigUyBggAEEUYOTIQCAEQABiRAhixAxiABBiKBTIQCAIQABiRAhixAxiABBiKBTINCAMQABiRAhiABBiKBTINCAQQABiRAhiABBiKBTINCAUQABiRAhiABBiKBTILCAYQABgKGAsYgAQyCwgHEAAYChgLGIAEMgsICBAAGAoYCxiABDILCAkQABgKGAsYgATSAQk0NDEwajFqMTWoAgiwAgHxBa334OmjoL13&sourceid=chrome&source=chrome.rb&ie=UTF-8",
+            "state": {
+              "url": "https://www.google.com/search?q=paris+weather&oq=Paris+weaher&gs_lcrp=EgZjaHJvbWUqEAgBEAAYkQIYsQMYgAQYigUyBggAEEUYOTIQCAEQABiRAhixAxiABBiKBTIQCAIQABiRAhixAxiABBiKBTINCAMQABiRAhiABBiKBTINCAQQABiRAhiABBiKBTINCAUQABiRAhiABBiKBTILCAYQABgKGAsYgAQyCwgHEAAYChgLGIAEMgsICBAAGAoYCxiABDILCAkQABgKGAsYgATSAQk0NDEwajFqMTWoAgiwAgHxBa334OmjoL13&sourceid=chrome&source=chrome.rb&ie=UTF-8",
+              "title": "paris weather - Google Search",
+              "domain": "google.com"
+            },
+            "cost": 1.5,
+            "sufficiency_score": 1.0
+          },
+          {
+            "context_id": "ctx_006",
+            "representation_id": "ctx_006_metadata",
+            "reconstruction_method": "url_with_metadata",
+            "reconstruction_target": "https://www.youtube.com/results?search_query=Paris+travel+vlog",
+            "state": {
+              "url": "https://www.youtube.com/results?search_query=Paris+travel+vlog",
+              "title": "Paris travel vlog - YouTube",
+              "domain": "youtube.com"
+            },
+            "cost": 1.5,
+            "sufficiency_score": 1.0
+          },
+          {
+            "context_id": "ctx_001",
+            "representation_id": "ctx_001_metadata",
+            "reconstruction_method": "url_with_metadata",
+            "reconstruction_target": "https://www.google.com/travel/flights/search?tfs=CBwQAhojEgoyMDI2LTExLTEyagcIARIDREVMcgwIAxIIL20vMDVxdGoaIxIKMjAyNi0xMS0yMGoMCAMSCC9tLzA1cXRqcgcIARIDREVMQAFIAXABggELCP___________wGYAQE&hl=en&gl=IN",
+            "state": {
+              "url": "https://www.google.com/travel/flights/search?tfs=CBwQAhojEgoyMDI2LTExLTEyagcIARIDREVMcgwIAxIIL20vMDVxdGoaIxIKMjAyNi0xMS0yMGoMCAMSCC9tLzA1cXRqcgcIARIDREVMQAFIAXABggELCP___________wGYAQE&hl=en&gl=IN",
+              "title": "New Delhi to Paris | Google Flights",
+              "domain": "google.com"
+            },
+            "cost": 1.5,
+            "sufficiency_score": 1.0
+          },
+          {
+            "context_id": "ctx_007",
+            "representation_id": "ctx_007_metadata",
+            "reconstruction_method": "url_with_metadata",
+            "reconstruction_target": "https://mail.google.com/mail/u/0/#all/FMfcgzQjggrPBMMsxMvwnjKrcLwKXlzm",
+            "state": {
+              "url": "https://mail.google.com/mail/u/0/#all/FMfcgzQjggrPBMMsxMvwnjKrcLwKXlzm",
+              "title": "Flight Booking Confirmed – New Delhi to Paris | 12 November 2026 - outworkthepast@gmail.com - Gmail",
+              "domain": "mail.google.com"
+            },
+            "cost": 1.5,
+            "sufficiency_score": 1.0
+          }
+        ]
+      }
+    }
+  ]
+}
