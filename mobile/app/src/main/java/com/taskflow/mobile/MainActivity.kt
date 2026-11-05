@@ -5,6 +5,9 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
+import android.text.Layout
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -15,6 +18,7 @@ import com.taskflow.mobile.model.TaskHandoff
 import com.taskflow.mobile.model.UnifiedActivityHandoff
 import com.taskflow.mobile.reconstruction.UrlReconstructor
 import java.io.IOException
+import kotlin.math.roundToInt
 
 class MainActivity : Activity() {
     private lateinit var statusText: TextView
@@ -124,56 +128,83 @@ class MainActivity : Activity() {
     }
 
     private fun renderActivity(activity: ActivityHandoff) {
-        addText(activity.activityLabel, 24f, true)
-        addText(getString(R.string.activity_id, activity.activityId), 14f, false)
+        val activityCard = createCard(R.color.activity_accent).apply {
+            addView(sectionLabel(R.string.activity_section, R.color.activity_accent))
+            addView(cardText(activity.activityLabel, 22f, true))
+            addView(cardText(getString(R.string.activity_id, activity.activityId), 13f, false))
+        }
 
-        activity.handoffPackages.forEach(::renderTask)
-        activity.activityHandoffPackage?.let(::renderUnifiedActivity)
+        activity.handoffPackages.forEach { task ->
+            renderTask(task, activityCard)
+        }
+        activity.activityHandoffPackage?.let { renderUnifiedActivity(it, activityCard) }
+        activityContent.addView(activityCard, childLayoutParams(0))
     }
 
-    private fun renderUnifiedActivity(activityPackage: UnifiedActivityHandoff) {
-        addText(activityPackage.activityLabel, 20f, true)
-        addText(activityPackage.activityDescription, 14f, false)
-        addText(
+    private fun renderUnifiedActivity(
+        activityPackage: UnifiedActivityHandoff,
+        parent: LinearLayout
+    ) {
+        val packageCard = createCard(R.color.task_accent).apply {
+            addView(sectionLabel(R.string.task_section, R.color.task_accent))
+            addView(cardText(activityPackage.activityLabel, 19f, true))
+            addView(cardText(activityPackage.activityDescription, 14f, false))
+            addView(cardText(
             getString(R.string.activity_context_count, activityPackage.contexts.size),
             14f,
             true
-        )
-        activityPackage.contexts.forEach(::renderContext)
-    }
-
-    private fun renderTask(task: TaskHandoff) {
-        addText(task.taskLabel, 20f, true)
-        addText(task.taskDescription, 14f, false)
-        addText(getString(R.string.context_count, task.contexts.size), 14f, true)
-        task.contexts.forEach(::renderContext)
-    }
-
-    private fun renderContext(context: HandoffContext) {
-        val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(24, 16, 24, 16)
+            ))
         }
-        addCardText(card, context.state.title, 16f, true)
-        addCardText(card, context.state.domain, 14f, false)
-        addCardText(card, context.reconstructionTarget, 12f, false)
-        addCardText(
-            card,
-            getString(
-                R.string.context_details,
-                context.contextId,
-                context.reconstructionMethod,
-                context.sufficiencyScore
-            ),
-            12f,
-            false
-        )
+        activityPackage.contexts.forEach { context ->
+            renderContext(context, packageCard)
+        }
+        parent.addView(packageCard, childLayoutParams())
+    }
+
+    private fun renderTask(task: TaskHandoff, parent: LinearLayout) {
+        val taskCard = createCard(R.color.task_accent).apply {
+            addView(sectionLabel(R.string.task_section, R.color.task_accent))
+            addView(cardText(task.taskLabel, 19f, true))
+            addView(cardText(task.taskDescription, 14f, false))
+            addView(cardText(getString(R.string.context_count, task.contexts.size), 14f, true))
+        }
+        task.contexts.forEach { context ->
+            renderContext(context, taskCard)
+        }
+        parent.addView(taskCard, childLayoutParams())
+    }
+
+    private fun renderContext(context: HandoffContext, parent: LinearLayout) {
+        val card = createCard(R.color.context_accent).apply {
+            addView(sectionLabel(R.string.context_section, R.color.context_accent))
+            addView(cardText(context.state.title, 16f, true))
+            addView(cardText(context.state.domain, 14f, false))
+            addView(cardText(context.reconstructionTarget, 12f, false).apply {
+                setTextIsSelectable(true)
+            })
+            addView(cardText(
+                getString(
+                    R.string.context_details,
+                    context.contextId,
+                    context.reconstructionMethod,
+                    context.sufficiencyScore
+                ),
+                12f,
+                false
+            ))
+        }
         addOpenAction(card, context)
-        activityContent.addView(card)
+        parent.addView(card, childLayoutParams(8))
     }
 
     private fun addOpenAction(parent: LinearLayout, context: HandoffContext) {
         val openButton = Button(this).apply {
+            backgroundTintList = android.content.res.ColorStateList.valueOf(
+                getColor(R.color.primary)
+            )
+            setTextColor(getColor(R.color.on_primary))
+            minHeight = dp(48)
+            isAllCaps = false
             text = getString(R.string.open_context)
             setOnClickListener {
                 when (val result = urlReconstructor.open(context)) {
@@ -203,18 +234,17 @@ class MainActivity : Activity() {
                 parent.addView(openButton)
             }
             !supportedMethod -> {
-                addCardText(
-                    parent,
+                parent.addView(cardText(
                     getString(
                         R.string.reconstruction_not_supported,
                         context.reconstructionMethod
                     ),
                     12f,
                     false
-                )
+                ))
             }
             else -> {
-                addCardText(parent, getString(R.string.invalid_context_url), 12f, false)
+                parent.addView(cardText(getString(R.string.invalid_context_url), 12f, false))
             }
         }
     }
@@ -224,33 +254,57 @@ class MainActivity : Activity() {
         return uri.scheme in HTTP_SCHEMES && !uri.host.isNullOrBlank()
     }
 
-    private fun addText(value: String, size: Float, bold: Boolean) {
-        val textView = TextView(this).apply {
-            text = value
-            textSize = size
-            setPadding(0, 12, 0, 6)
-            if (bold) {
-                setTypeface(typeface, android.graphics.Typeface.BOLD)
+    private fun createCard(accentColor: Int): LinearLayout {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(14), dp(16), dp(16))
+            background = GradientDrawable().apply {
+                setColor(getColor(R.color.surface_card))
+                cornerRadius = dp(12).toFloat()
+                setStroke(dp(1), getColor(accentColor))
             }
         }
-        activityContent.addView(textView)
     }
 
-    private fun addCardText(
-        parent: LinearLayout,
-        value: String,
-        size: Float,
-        bold: Boolean
-    ) {
-        val textView = TextView(this).apply {
+    private fun sectionLabel(stringId: Int, colorId: Int): TextView {
+        return TextView(this).apply {
+            text = getString(stringId)
+            textSize = 11f
+            setTextColor(getColor(colorId))
+            setTypeface(typeface, Typeface.BOLD)
+            letterSpacing = 0.12f
+            setPadding(0, 0, 0, dp(6))
+        }
+    }
+
+    private fun cardText(value: String, size: Float, bold: Boolean): TextView {
+        return TextView(this).apply {
             text = value
             textSize = size
-            setPadding(0, 4, 0, 4)
+            setTextColor(getColor(R.color.on_surface))
+            setPadding(0, dp(3), 0, dp(5))
+            setLineSpacing(0f, 1.12f)
+            isSingleLine = false
+            setHorizontallyScrolling(false)
+            breakStrategy = Layout.BREAK_STRATEGY_SIMPLE
+            ellipsize = null
             if (bold) {
-                setTypeface(typeface, android.graphics.Typeface.BOLD)
+                setTypeface(typeface, Typeface.BOLD)
             }
         }
-        parent.addView(textView)
+    }
+
+    private fun childLayoutParams(topMargin: Int = 12): LinearLayout.LayoutParams {
+        return LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            setMargins(0, dp(topMargin), 0, 0)
+        }
+    }
+
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).roundToInt()
     }
 
     private companion object {

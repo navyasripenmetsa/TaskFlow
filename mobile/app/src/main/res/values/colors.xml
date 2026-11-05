@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="surface">#F7F9FC</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="surface_subtle">#EEF3FA</color>
+    <color name="on_surface">#182230</color>
+    <color name="on_surface_muted">#5B6878</color>
+    <color name="primary">#2457A6</color>
+    <color name="primary_dark">#17417F</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="outline">#D7DFEA</color>
+    <color name="activity_accent">#2457A6</color>
+    <color name="task_accent">#2E7D62</color>
+    <color name="context_accent">#8A5A18</color>
+</resources>

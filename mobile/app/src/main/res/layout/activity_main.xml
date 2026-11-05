@@ -3,47 +3,80 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
-    android:background="#FAFAFA">
+    android:background="@color/surface"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingTop="@dimen/screen_padding"
+    android:paddingEnd="@dimen/screen_padding"
+    android:paddingBottom="@dimen/screen_padding">
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/on_surface"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:fontFamily="sans" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textSize="28sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="4dp"
+        android:text="@string/app_subtitle"
+        android:textColor="@color/on_surface_muted"
+        android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/loadSampleButton"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="@string/load_sample_package" />
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/importJsonButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/import_json" />
+        <Button
+            android:id="@+id/loadSampleButton"
+            style="@style/TaskFlowButton.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/load_sample_package" />
+
+        <Button
+            android:id="@+id/importJsonButton"
+            style="@style/TaskFlowButton.Primary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:text="@string/import_json" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/statusText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/status_background"
+        android:padding="12dp"
         android:text="@string/loading_package"
-        android:textColor="#555555" />
+        android:textColor="@color/on_surface_muted"
+        android:textSize="14sp"
+        android:lineSpacingExtra="2dp"
+        android:accessibilityLiveRegion="polite" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/activityContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:paddingBottom="12dp" />
     </ScrollView>
 </LinearLayout>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TaskFlow Mobile</string>
+    <string name="app_subtitle">Review handoff packages and reopen saved browser contexts.</string>
     <string name="load_sample_package">Load sample handoff package</string>
     <string name="import_json">Import JSON</string>
     <string name="loading_package">Loading handoff package…</string>
@@ -12,6 +13,9 @@
     <string name="file_picker_unavailable">No file picker is available on this device.</string>
     <string name="unknown_error">Unknown parsing error</string>
     <string name="activity_id">Activity ID: %1$s</string>
+    <string name="activity_section">ACTIVITY</string>
+    <string name="task_section">TASK PACKAGE</string>
+    <string name="context_section">CONTEXT</string>
     <string name="activity_context_count">Activity contexts: %1$d</string>
     <string name="context_count">Selected contexts: %1$d</string>
     <string name="context_details">Context %1$s • %2$s • sufficiency %3$.2f</string>
