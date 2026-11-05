@@ -2,11 +2,17 @@
 <resources>
     <string name="app_name">TaskFlow Mobile</string>
     <string name="load_sample_package">Load sample handoff package</string>
+    <string name="import_json">Import JSON</string>
     <string name="loading_package">Loading handoff package…</string>
+    <string name="importing_package">Importing handoff package…</string>
     <string name="package_loaded">Loaded %1$d activity(ies)</string>
     <string name="package_error">Could not load package: %1$s</string>
+    <string name="import_error">Could not import package: %1$s</string>
+    <string name="file_access_error">Could not access the selected file.</string>
+    <string name="file_picker_unavailable">No file picker is available on this device.</string>
     <string name="unknown_error">Unknown parsing error</string>
     <string name="activity_id">Activity ID: %1$s</string>
+    <string name="activity_context_count">Activity contexts: %1$d</string>
     <string name="context_count">Selected contexts: %1$d</string>
     <string name="context_details">Context %1$s • %2$s • sufficiency %3$.2f</string>
     <string name="open_context">Open in browser</string>

@@ -1,6 +1,9 @@
 package com.taskflow.mobile
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
@@ -9,7 +12,9 @@ import com.taskflow.mobile.data.HandoffParser
 import com.taskflow.mobile.model.ActivityHandoff
 import com.taskflow.mobile.model.HandoffContext
 import com.taskflow.mobile.model.TaskHandoff
+import com.taskflow.mobile.model.UnifiedActivityHandoff
 import com.taskflow.mobile.reconstruction.UrlReconstructor
+import java.io.IOException
 
 class MainActivity : Activity() {
     private lateinit var statusText: TextView
@@ -26,6 +31,9 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.loadSampleButton).setOnClickListener {
             loadSamplePackage()
         }
+        findViewById<Button>(R.id.importJsonButton).setOnClickListener {
+            openJsonDocument()
+        }
         loadSamplePackage()
     }
 
@@ -41,6 +49,64 @@ class MainActivity : Activity() {
             Result.failure(error)
         }
 
+        displayResult(result, R.string.package_error)
+    }
+
+    private fun openJsonDocument() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+        }
+        try {
+            startActivityForResult(intent, REQUEST_OPEN_JSON)
+        } catch (_: ActivityNotFoundException) {
+            statusText.setText(R.string.file_picker_unavailable)
+        }
+    }
+
+    @Deprecated("Use Activity Result APIs when the app adds the AndroidX activity dependency.")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != REQUEST_OPEN_JSON || resultCode != RESULT_OK) {
+            return
+        }
+
+        val uri = data?.data
+        if (uri == null) {
+            statusText.setText(R.string.file_access_error)
+            return
+        }
+
+        loadImportedPackage(uri)
+    }
+
+    private fun loadImportedPackage(uri: Uri) {
+        statusText.setText(R.string.importing_package)
+        activityContent.removeAllViews()
+
+        val result = try {
+            val inputStream = contentResolver.openInputStream(uri)
+                ?: throw IOException("The selected file could not be opened.")
+            inputStream.bufferedReader().use { reader ->
+                val contents = reader.readText()
+                if (contents.isBlank()) {
+                    throw IOException("The selected file is empty.")
+                }
+                HandoffParser().parse(contents)
+            }
+        } catch (error: SecurityException) {
+            Result.failure(IOException("Access to the selected file was denied.", error))
+        } catch (error: IOException) {
+            Result.failure(error)
+        }
+
+        displayResult(result, R.string.import_error)
+    }
+
+    private fun displayResult(
+        result: Result<com.taskflow.mobile.model.HandoffDocument>,
+        errorStringId: Int
+    ) {
         result
             .onSuccess { document ->
                 statusText.text = getString(
@@ -51,7 +117,7 @@ class MainActivity : Activity() {
             }
             .onFailure { error ->
                 statusText.text = getString(
-                    R.string.package_error,
+                    errorStringId,
                     error.message ?: getString(R.string.unknown_error)
                 )
             }
@@ -62,6 +128,18 @@ class MainActivity : Activity() {
         addText(getString(R.string.activity_id, activity.activityId), 14f, false)
 
         activity.handoffPackages.forEach(::renderTask)
+        activity.activityHandoffPackage?.let(::renderUnifiedActivity)
+    }
+
+    private fun renderUnifiedActivity(activityPackage: UnifiedActivityHandoff) {
+        addText(activityPackage.activityLabel, 20f, true)
+        addText(activityPackage.activityDescription, 14f, false)
+        addText(
+            getString(R.string.activity_context_count, activityPackage.contexts.size),
+            14f,
+            true
+        )
+        activityPackage.contexts.forEach(::renderContext)
     }
 
     private fun renderTask(task: TaskHandoff) {
@@ -177,6 +255,7 @@ class MainActivity : Activity() {
 
     private companion object {
         const val SAMPLE_FILE = "activity_handoff.json"
+        const val REQUEST_OPEN_JSON = 1001
         val HTTP_SCHEMES = setOf("http", "https")
         val SUPPORTED_METHODS = setOf(
             "url",
