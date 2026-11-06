@@ -116,7 +116,49 @@ class StateRepresentationEngine:
                     cost=3.0,
                 )
             )
-
+        # Representation 5:
+        # Preserve the complete original context as a fallback.
+        # This ensures that a captured tab is never lost when
+        # compact representations are insufficient.
+        representations.append(
+            StateRepresentation(
+                representation_id=(
+                    f"{context.context_id}_original_fallback"
+                ),
+                context_id=context.context_id,
+                method="original_context_fallback",
+                target=context.reconstruction_target,
+                state={
+                    "context_id": context.context_id,
+                    "tab_id": context.tab_id,
+                    "window_id": context.window_id,
+                    "title": context.title,
+                    "url": context.url,
+                    "domain": context.domain,
+                    "text": context.text,
+                    "active": context.active,
+                    "last_interaction": context.last_interaction,
+                    "reconstruction_method": (
+                        context.reconstruction_method
+                    ),
+                    "reconstruction_target": (
+                        context.reconstruction_target
+                    ),
+                    "interaction_state": (
+                        context.interaction_state.copy()
+                    ),
+                },
+                preserved_capabilities=[
+                    "resource_identity",
+                    "resource_access",
+                    "page_identity",
+                    "semantic_context",
+                    "spreadsheet_data",
+                    "complete_context",
+                ],
+                cost=10.0,
+            )
+        )
         return representations
 
     def generate_many(

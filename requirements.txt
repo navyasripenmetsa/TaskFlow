@@ -4,3 +4,9 @@ sentence-transformers
 numpy
 scikit-learn
 nltk
+yake
+python-dotenv
+openai
+google-api-python-client
+google-auth
+google-auth-oauthlib
