@@ -42,6 +42,8 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 // Receive handoff instructions and open their URLs.
+
+// Receive handoff instructions and reconstruct the activity.
 chrome.runtime.onMessage.addListener(
   (message, sender, sendResponse) => {
 
@@ -51,33 +53,82 @@ chrome.runtime.onMessage.addListener(
 
     (async () => {
       try {
-        const urls = message.contexts
+        const activity = message.activity;
+
+        if (
+          !activity ||
+          !Array.isArray(activity.contexts) ||
+          activity.contexts.length === 0
+        ) {
+          throw new Error("Invalid activity package.");
+        }
+
+        const urls = activity.contexts
           .map(context => context.reconstruction_target)
           .filter(url =>
             typeof url === "string" &&
             url.startsWith("https://")
           );
 
+        if (urls.length === 0) {
+          throw new Error("No valid HTTPS URLs found.");
+        }
+
+        // Open all selected contexts in new tabs.
         const createdTabs = [];
 
         for (const url of urls) {
           const tab = await chrome.tabs.create({
-            url: url,
+            url,
             active: false
           });
 
           createdTabs.push(tab.id);
         }
 
+        // Create a Chrome Tab Group for this activity.
+        const groupId = await chrome.tabs.group({
+          tabIds: createdTabs
+        });
+
+        // Name and color the group.
+        await chrome.tabGroups.update(groupId, {
+          title: activity.label || "TaskFlow Activity",
+          color: "blue",
+          collapsed: false
+        });
+
+        // Save reconstructed activity metadata locally.
+        const stored = await chrome.storage.local.get([
+          "taskflowReconstructedActivities"
+        ]);
+
+        const activities =
+          stored.taskflowReconstructedActivities || [];
+
+        activities.push({
+          activity_id: activity.activity_id || null,
+          label: activity.label || "TaskFlow Activity",
+          description: activity.description || "",
+          group_id: groupId,
+          tab_ids: createdTabs,
+          reconstructed_at: new Date().toISOString()
+        });
+
+        await chrome.storage.local.set({
+          taskflowReconstructedActivities: activities
+        });
+
         sendResponse({
           success: true,
           opened_tabs: createdTabs.length,
-          tab_ids: createdTabs
+          tab_ids: createdTabs,
+          group_id: groupId
         });
 
       } catch (error) {
         console.error(
-          "[TaskFlow] Handoff failed:",
+          "[TaskFlow] Activity reconstruction failed:",
           error
         );
 

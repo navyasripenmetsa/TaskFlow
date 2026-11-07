@@ -1,0 +1,5 @@
+
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\com.taskflow.native]
+@="C:\\Users\\navya\\Task_aware_minimum_context_selection\\native_host\\com.taskflow.native.json"

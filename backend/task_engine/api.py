@@ -5,10 +5,10 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-
 from .activity_inference import ActivityInferenceEngine
 from .embeddings import EmbeddingEngine
 from .features import FeatureExtractor
+from .google_sheets_adapter import GoogleSheetsAdapter
 from .handoff import HandoffBuilder
 from .minimum_context_selector import MinimumContextSelector
 from .normalizer import load_contexts
@@ -106,12 +106,62 @@ def process_contexts(request: ContextProcessingRequest):
         }
 
         contexts = load_contexts(session_data)
-
         if not contexts:
-            raise HTTPException(
-                status_code=400,
-                detail="No valid contexts were found.",
+                    raise HTTPException(
+                        status_code=400,
+                        detail="No valid contexts were found.",
+                    )
+        # Enrich Google Sheets contexts using the existing Sheets API adapter.
+        sheets_adapter = GoogleSheetsAdapter()
+
+        for context in contexts:
+            print(
+                "[SHEETS DEBUG]",
+                "ID:", context.context_id,
+                "| Title:", context.title,
+                "| Domain:", context.domain,
+                "| URL:", context.url
             )
+            spreadsheet_id = sheets_adapter.extract_spreadsheet_id(
+                context.url
+            )
+
+            if spreadsheet_id:
+                logging.info(
+                    "Reading Google Sheets context: %s",
+                    context.context_id
+                )
+
+                spreadsheet_data = sheets_adapter.extract(context.url)
+
+                if spreadsheet_data:
+                    context.interaction_state["spreadsheet_data"] = (
+                        spreadsheet_data
+                    )
+
+                    spreadsheet_text = []
+
+                    for sheet in spreadsheet_data["sheets"]:
+                        spreadsheet_text.append(
+                            f"Sheet: {sheet['sheet_name']}"
+                        )
+
+                        for row in sheet["values"]:
+                            spreadsheet_text.append(
+                                " | ".join(str(cell) for cell in row)
+                            )
+
+                    context.text = (
+                        (context.text or "")
+                        + "\n"
+                        + "\n".join(spreadsheet_text)
+                    )
+
+                    logging.info(
+                        "Enriched %s with %s sheets",
+                        context.context_id,
+                        len(spreadsheet_data["sheets"])
+                    )
 
         # 2. Initialize or reuse shared components.
         components = get_task_engine_components()

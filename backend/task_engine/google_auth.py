@@ -5,8 +5,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
-
+SCOPES = [
+    "https://www.googleapis.com/auth/spreadsheets.readonly"
+]
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CREDENTIALS_FILE = PROJECT_ROOT / "credentials.json"
 TOKEN_FILE = PROJECT_ROOT / "token.json"

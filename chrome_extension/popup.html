@@ -1,41 +1,206 @@
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TaskFlow ContextItem Collector</title>
+  <title>TaskFlow</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
+
 <body>
   <main class="app">
-    <h1>TaskFlow Context Collector</h1>
-    <p class="subtitle">Capture tab metadata and visible page text in your team's ContextItem format.</p>
 
-    <button id="captureBtn" class="primary">Capture Context</button>
-    <button id="handoffBtn" class="primary">
-    Handoff Activity
-    </button>
-    <input
-      type="file"
-      id="handoffFile"
-      accept=".json,application/json"
-      hidden
-    />
-    <div id="status" class="status">Ready</div>
-    <div id="summary" class="summary">No capture yet.</div>
-    <div id="tabList" class="tab-list"></div>
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">T</div>
+        <div>
+          <h1>TaskFlow</h1>
+          <p class="subtitle">Your browser workspace</p>
+        </div>
+      </div>
+    </header>
 
-    <details>
-      <summary>Raw JSON</summary>
-      <pre id="jsonOutput">{}</pre>
-    </details>
+    <!-- Main capture action -->
+    <section class="capture-section">
+      <div class="section-heading">
+        <h2>Capture your workspace</h2>
+        <p>Capture browser tabs and discover related activities.</p>
+      </div>
 
-    <div class="actions">
-      <button id="copyBtn" disabled>Copy JSON</button>
-      <button id="downloadBtn" disabled>Download JSON</button>
+      <button id="captureBtn" class="primary">
+        Capture &amp; Process
+      </button>
+    </section>
+
+    <!-- Status -->
+    <div id="status" class="status" role="status" aria-live="polite">
+      Ready
     </div>
 
-    <button id="clearBtn" class="secondary">Clear Activity History</button>
+    <!-- Capture summary -->
+    <section class="content-section">
+      <div class="section-title-row">
+        <h2>Captured Contexts</h2>
+        <span id="summary" class="summary">No capture yet.</span>
+      </div>
+
+      <div id="tabList" class="tab-list"></div>
+    </section>
+
+    <!-- Discovered activities -->
+    <section id="activitiesSection" class="content-section" hidden>
+      <div class="section-title-row">
+        <h2>Discovered Activities</h2>
+      </div>
+
+      <div id="activityList" class="activity-list"></div>
+
+      <div class="transfer-section">
+        <label for="activitySelect">Select activity</label>
+
+        <select id="activitySelect">
+          <option value="">Capture contexts first</option>
+        </select>
+
+        <div id="selectedActivityInfo" class="summary">
+          No activity selected.
+        </div>
+
+        <label for="deviceSelect">Destination device</label>
+
+        <select id="deviceSelect">
+          <option value="">Select destination device</option>
+        </select>
+
+        <button id="sendToDeviceBtn" class="primary">
+          Send Activity
+        </button>
+      </div>
+    </section>
+
+    <!-- Receive activity -->
+    <section class="receive-section">
+      <div>
+        <h2>Receive Activity</h2>
+        <p>Continue your work from another device.</p>
+      </div>
+
+      <button id="receiveFromCloudBtn" class="secondary">
+        Check for Incoming Activity
+      </button>
+    </section>
+
+    <!-- Device management -->
+    <details id="pairingSection" class="expandable-section">
+      <summary>
+        <span>Manage Devices</span>
+        <span class="expand-hint">Registration and pairing</span>
+      </summary>
+
+      <div class="expandable-content">
+
+        <div class="management-group">
+          <h3>This Device</h3>
+
+          <button id="registerDeviceBtn" class="secondary">
+            Register This Device
+          </button>
+        </div>
+
+        <div class="management-group">
+          <h3>Connect Another Device</h3>
+
+          <button id="generatePairingCodeBtn" class="secondary">
+            Generate Pairing Code
+          </button>
+
+          <div id="pairingCodeContainer" hidden>
+            <div id="pairingCodeDisplay" class="summary"></div>
+            <p class="subtitle">
+              This code expires in 5 minutes.
+            </p>
+          </div>
+        </div>
+
+        <div class="management-group">
+          <h3>Pair This Device</h3>
+
+          <input
+            type="text"
+            id="pairingCodeInput"
+            placeholder="Enter 8-digit pairing code"
+            maxlength="8"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+          />
+
+          <button id="pairDeviceBtn" class="secondary">
+            Pair Device
+          </button>
+        </div>
+
+        <div class="management-group">
+          <h3>Refresh Device List</h3>
+
+          <button id="refreshDevicesBtn" class="secondary">
+            Refresh Devices
+          </button>
+        </div>
+
+      </div>
+    </details>
+
+    <!-- Advanced tools -->
+    <details class="expandable-section">
+      <summary>
+        <span>Advanced Tools</span>
+        <span class="expand-hint">Import, export and diagnostics</span>
+      </summary>
+
+      <div class="expandable-content">
+
+        <div class="management-group">
+          <h3>Local JSON Handoff</h3>
+
+          <button id="handoffBtn" class="secondary">
+            Import Handoff JSON
+          </button>
+
+          <input
+            type="file"
+            id="handoffFile"
+            accept=".json,application/json"
+            hidden
+          />
+        </div>
+
+        <div class="management-group">
+          <h3>Captured Context Data</h3>
+
+          <details class="raw-data-section">
+            <summary>View Raw JSON</summary>
+            <pre id="jsonOutput">{}</pre>
+          </details>
+
+          <div class="actions">
+            <button id="copyBtn" disabled>Copy JSON</button>
+            <button id="downloadBtn" disabled>Download JSON</button>
+          </div>
+        </div>
+
+        <div class="management-group">
+          <h3>Activity History</h3>
+
+          <button id="clearBtn" class="secondary">
+            Clear Activity History
+          </button>
+        </div>
+
+      </div>
+    </details>
+
   </main>
 
   <script src="utils.js"></script>

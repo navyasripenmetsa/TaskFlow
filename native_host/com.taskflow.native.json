@@ -1,0 +1,9 @@
+{
+  "name": "com.taskflow.native",
+  "description": "TaskFlow Native Messaging Host",
+  "path": "C:\\Users\\navya\\Task_aware_minimum_context_selection\\dist\\taskflow_native_host.exe",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://ealkoondlhjbidejajopepifbknmcgjn/"
+  ]
+}

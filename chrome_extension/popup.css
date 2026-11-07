@@ -1,46 +1,735 @@
-* { box-sizing: border-box; }
+
+/* ========================================
+   TaskFlow — Popup Design
+======================================== */
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
+  width: 420px;
   min-width: 420px;
   max-width: 420px;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f6f7f9;
-  color: #1f2937;
+  background: #f8fafc;
+  color: #101828;
 }
-.app { padding: 18px; }
-h1 { margin: 0 0 6px; font-size: 20px; }
-.subtitle { margin: 0 0 16px; color: #667085; font-size: 13px; line-height: 1.45; }
+
+.app {
+  padding: 20px;
+}
+
+/* ========================================
+   Header
+======================================== */
+
+.app-header {
+  margin-bottom: 22px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.brand-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+h1 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 750;
+  letter-spacing: -0.4px;
+}
+
+.subtitle {
+  margin: 3px 0 0;
+  color: #667085;
+  font-size: 12px;
+}
+
+/* ========================================
+   Section headings
+======================================== */
+
+section {
+  min-width: 0;
+}
+
+.section-heading {
+  margin-bottom: 13px;
+}
+
+.section-heading h2,
+.content-section h2,
+.receive-section h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.section-heading p,
+.receive-section p {
+  margin: 5px 0 0;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.content-section {
+  margin-top: 20px;
+}
+
+.section-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.summary {
+  margin: 0;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ========================================
+   Buttons
+======================================== */
+
 button {
+  min-height: 36px;
+  padding: 9px 12px;
   border: 1px solid #d0d5dd;
   border-radius: 8px;
-  padding: 9px 12px;
-  background: white;
+  background: #ffffff;
+  color: #344054;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
   cursor: pointer;
-  font-weight: 600;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
 }
-button:disabled { opacity: .5; cursor: not-allowed; }
-.primary { width: 100%; background: #111827; color: white; border-color: #111827; }
-.secondary { width: 100%; margin-top: 12px; }
-.status { margin: 12px 0 4px; font-size: 13px; color: #475467; }
-.status.success { color: #067647; }
-.status.error { color: #b42318; }
-.status.loading { color: #175cd3; }
-.summary { margin-bottom: 10px; font-size: 13px; font-weight: 600; }
-.tab-list { display: grid; gap: 8px; max-height: 220px; overflow: auto; }
-.tab-card { padding: 10px; border: 1px solid #e4e7ec; border-radius: 8px; background: white; }
-.tab-title { font-size: 13px; font-weight: 700; line-height: 1.35; }
-.tab-domain, .tab-meta { margin-top: 4px; font-size: 12px; color: #667085; }
-details { margin-top: 14px; }
-summary { cursor: pointer; font-size: 13px; font-weight: 700; }
+
+button:hover:not(:disabled) {
+  background: #f2f4f7;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary {
+  width: 100%;
+  min-height: 40px;
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.primary:hover:not(:disabled) {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+}
+
+.secondary {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.capture-section > .primary {
+  margin-top: 2px;
+}
+
+/* ========================================
+   Status
+======================================== */
+
+.status {
+  margin-top: 12px;
+  padding: 9px 11px;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #475467;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.status.success {
+  border-color: #abefc6;
+  background: #ecfdf3;
+  color: #067647;
+}
+
+.status.error {
+  border-color: #fecdca;
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.status.loading {
+  border-color: #b2ddff;
+  background: #eff8ff;
+  color: #175cd3;
+}
+
+/* ========================================
+   Captured tabs
+======================================== */
+
+.tab-list {
+  display: grid;
+  gap: 8px;
+  max-height: 190px;
+  overflow-y: auto;
+}
+
+.tab-card {
+  padding: 11px;
+  border: 1px solid #e4e7ec;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.tab-title {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.tab-domain,
+.tab-meta {
+  margin-top: 4px;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* ========================================
+   Discovered activities
+======================================== */
+
+.activity-list {
+  display: grid;
+  gap: 9px;
+  margin-top: 8px;
+}
+
+.activity-card {
+  padding: 12px;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.activity-title {
+  color: #101828;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.activity-description {
+  margin-top: 5px;
+  color: #667085;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.activity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 9px;
+}
+
+.activity-tag {
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: #f2f4f7;
+  color: #475467;
+  font-size: 10px;
+}
+
+.activity-ready {
+  margin-top: 9px;
+  color: #067647;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+/* ========================================
+   Activity transfer
+======================================== */
+
+.transfer-section {
+  margin-top: 14px;
+  padding: 13px;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+label {
+  display: block;
+  margin: 10px 0 6px;
+  color: #344054;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+select,
+input[type="text"] {
+  width: 100%;
+  min-height: 37px;
+  padding: 8px 10px;
+  border: 1px solid #d0d5dd;
+  border-radius: 7px;
+  outline: none;
+  background: #ffffff;
+  color: #344054;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+select:focus,
+input[type="text"]:focus {
+  border-color: #84adff;
+  box-shadow: 0 0 0 3px #eff4ff;
+}
+
+.transfer-section .summary {
+  margin-top: 7px;
+}
+
+.transfer-section .primary {
+  margin-top: 12px;
+}
+
+/* ========================================
+   Receive activity
+======================================== */
+
+.receive-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+/* ========================================
+   Expandable sections
+======================================== */
+
+.expandable-section {
+  margin-top: 13px;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.expandable-section > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px;
+  color: #344054;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.expandable-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.expandable-section > summary::after {
+  content: "+";
+  color: #667085;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.expandable-section[open] > summary::after {
+  content: "−";
+}
+
+.expand-hint {
+  margin-left: auto;
+  color: #98a2b3;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.expandable-content {
+  padding: 0 13px 13px;
+  border-top: 1px solid #f2f4f7;
+}
+
+.management-group {
+  padding-top: 13px;
+}
+
+.management-group h3 {
+  margin: 0 0 7px;
+  color: #475467;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.management-group .secondary {
+  margin-top: 0;
+}
+
+/* ========================================
+   Pairing code
+======================================== */
+
+#pairingCodeContainer {
+  margin-top: 10px;
+  padding: 11px;
+  border: 1px dashed #84adff;
+  border-radius: 8px;
+  background: #eff6ff;
+}
+
+#pairingCodeDisplay {
+  color: #1d4ed8;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-align: center;
+}
+
+/* ========================================
+   Advanced tools
+======================================== */
+
+.raw-data-section {
+  margin-top: 5px;
+}
+
+.raw-data-section > summary {
+  color: #475467;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 pre {
-  max-height: 260px;
+  max-height: 220px;
   overflow: auto;
   padding: 10px;
+  border-radius: 8px;
   background: #101828;
   color: #f2f4f7;
-  border-radius: 8px;
-  font-size: 11px;
+  font-size: 10px;
   white-space: pre-wrap;
   word-break: break-word;
 }
-.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.actions button {
+  min-width: 0;
+  font-size: 11px;
+}
+
+/* ========================================
+   Hidden elements
+======================================== */
+
+[hidden] {
+  display: none !important;
+}
+
+/* ========================================
+   TaskFlow — Aesthetic Refinements
+======================================== */
+
+body {
+  background: linear-gradient(145deg, #f5f3ff 0%, #f8faff 55%, #f0f7ff 100%);
+  color: #202747;
+}
+
+.app {
+  padding: 21px;
+}
+
+/* Brand */
+.brand-icon {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+h1 {
+  letter-spacing: -0.6px;
+  color: #202747;
+}
+
+/* Section headings */
+.section-heading h2,
+.content-section h2,
+.receive-section h2 {
+  color: #29345c;
+  letter-spacing: -0.2px;
+}
+
+/* Main capture button */
+.primary {
+  background: linear-gradient(110deg, #6366f1, #3b82f6);
+  border: none;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.19);
+}
+
+.primary:hover:not(:disabled) {
+  background: linear-gradient(110deg, #5558e8, #2563eb);
+  box-shadow: 0 5px 15px rgba(79, 70, 229, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Secondary buttons */
+button {
+  border-radius: 9px;
+  transition: all 0.18s ease;
+}
+
+.secondary {
+  border-color: #dce2f2;
+  color: #46547e;
+}
+
+.secondary:hover:not(:disabled) {
+  background: #f0f2ff;
+  border-color: #a5b4fc;
+}
+
+/* Status */
+.status {
+  border-color: #e0e5f5;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+}
+
+/* Content cards */
+.tab-card,
+.activity-card,
+.transfer-section,
+.receive-section {
+  border: 1px solid #e3e7f5;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 2px 7px rgba(44, 62, 110, 0.035);
+}
+
+.activity-card:hover,
+.tab-card:hover {
+  border-color: #c7d2fe;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+}
+
+/* Activity tags */
+.activity-tag {
+  background: #eef2ff;
+  color: #4f46a5;
+  border-radius: 6px;
+}
+
+/* Expandable sections */
+.expandable-section {
+  border: 1px solid #e0e5f2;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 3px 10px rgba(44, 62, 110, 0.04);
+  overflow: hidden;
+}
+
+.expandable-section > summary {
+  min-height: 49px;
+  color: #34416b;
+  transition: background 0.18s ease;
+}
+
+.expandable-section > summary:hover {
+  background: #f5f6ff;
+}
+
+.expandable-section[open] > summary {
+  background: #f4f5ff;
+  color: #4f46a5;
+}
+
+.expandable-content {
+  border-top-color: #e9ecf8;
+}
+
+/* Management group headings */
+.management-group h3 {
+  color: #59678e;
+  letter-spacing: 0.1px;
+}
+
+/* Inputs and dropdowns */
+select,
+input[type="text"] {
+  border-color: #dce2f2;
+  border-radius: 9px;
+  color: #34416b;
+}
+
+select:focus,
+input[type="text"]:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.13);
+}
+
+/* Pairing code */
+#pairingCodeContainer {
+  border-color: #a5b4fc;
+  background: linear-gradient(135deg, #eef2ff, #eff6ff);
+  border-radius: 10px;
+}
+
+/* Raw JSON */
+pre {
+  border: 1px solid #273451;
+  border-radius: 10px;
+}
+
+/* Button disabled state */
+button:disabled {
+  box-shadow: none;
+}
+
+/* Subtle scrollbar */
+.tab-list::-webkit-scrollbar,
+pre::-webkit-scrollbar {
+  width: 5px;
+}
+
+.tab-list::-webkit-scrollbar-thumb,
+pre::-webkit-scrollbar-thumb {
+  background: #c7cde0;
+  border-radius: 10px;
+}
+
+/* ========================================
+   Blue + Dark Orange Button Palette
+======================================== */
+
+/* Secondary action buttons */
+.secondary {
+  background: #E87500;
+  border: 1px solid #C65D00;
+  color: #000000;
+  box-shadow: 0 2px 5px rgba(200, 90, 0, 0.12);
+}
+
+.secondary:hover:not(:disabled) {
+  background: #D96800;
+  border-color: #B45309;
+  color: #000000;
+  box-shadow: 0 3px 9px rgba(200, 90, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Primary buttons remain blue */
+.primary {
+  background: linear-gradient(110deg, #6366f1, #3b82f6);
+  color: #ffffff;
+  border: none;
+}
+
+/* Disabled buttons */
+button:disabled {
+  background: #f2f4f7;
+  border-color: #e4e7ec;
+  color: #000000;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ========================================
+   Pairing Input Improvements
+======================================== */
+
+#pairingCodeInput {
+  margin-bottom: 12px;
+  border: 1.5px solid #000000;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #000000;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#pairingCodeInput:hover {
+  border-color: #E87500;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+}
+
+#pairingCodeInput:focus {
+  border-color: #E87500;
+  box-shadow: 0 0 0 3px rgba(232, 117, 0, 0.18);
+  outline: none;
+}
+
+/* ========================================
+   Card Hover Effects
+======================================== */
+
+.tab-card,
+.activity-card,
+.transfer-section,
+.receive-section,
+.expandable-section {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.tab-card:hover,
+.activity-card:hover,
+.transfer-section:hover,
+.receive-section:hover,
+.expandable-section:hover {
+  border-color: #E87500;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Management groups */
+.management-group {
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.management-group:hover {
+  background: #fffaf5;
+}
