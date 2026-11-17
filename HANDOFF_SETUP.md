@@ -55,3 +55,29 @@ The same generation pipeline can be run without the server:
 
 The default output is a separate generated file and does not replace the
 bundled Android sample.
+
+## Activity grouping and desktop-to-desktop handoff
+
+The extension's **Capture & Process**, activity list, and cloud device-transfer
+controls use the task-processing/cloud API at `http://127.0.0.1:8000`. Start it
+in a separate PowerShell window:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn backend.cloud_handoff_server:app --host 127.0.0.1 --port 8000
+```
+
+This app mounts `/process-contexts` and the cloud device/pairing routes. The
+same-Wi-Fi Android receiver is a separate app (`backend.run_lan_server`). If
+you need both services at once, run the LAN receiver on a different port, for
+example:
+
+```powershell
+$env:TASKFLOW_PORT = "8001"
+.\.venv\Scripts\python.exe -m backend.run_lan_server
+```
+
+Use the printed `:8001` address and pairing token in Android Connection
+Settings and the extension's **Mobile connection** settings. Allow that port
+on the Windows Firewall's Private profile if prompted. The extension's
+**Capture & Process** and cloud **Send Activity** controls continue using the
+local cloud API on `127.0.0.1:8000`.

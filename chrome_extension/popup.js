@@ -6,13 +6,10 @@ const PROCESSING_API_URL = "http://127.0.0.1:8000/process-contexts";
 const activitiesSection = document.getElementById("activitiesSection");
 const activityListEl = document.getElementById("activityList");
 const activitySelect = document.getElementById("activitySelect");
+const taskSelect = document.getElementById("taskSelect");
 const selectedActivityInfo = document.getElementById("selectedActivityInfo");
 const captureBtn = document.getElementById("captureBtn");
-const sendMobileBtn = document.getElementById("sendMobileBtn");
 const handoffBtn = document.getElementById("handoffBtn");
-const mobileServerUrlInput = document.getElementById("serverUrlInput");
-const mobilePairingTokenInput = document.getElementById("pairingTokenInput");
-const saveMobileConfigBtn = document.getElementById("saveMobileConfigBtn");
 const handoffFile = document.getElementById("handoffFile");
 const copyBtn = document.getElementById("copyBtn");
 const downloadBtn = document.getElementById("downloadBtn");
@@ -60,7 +57,6 @@ function renderCapture(capture) {
 
   copyBtn.disabled = false;
   downloadBtn.disabled = false;
-  sendMobileBtn.disabled = !capture.contexts.length;
 }
 function getActivityContexts(activity) {
   const sourcePackage =
@@ -73,21 +69,47 @@ function getActivityContexts(activity) {
         .flatMap(pkg => pkg.contexts || []);
 }
 
-function updateSelectedActivityInfo() {
+function populateTaskSelect(activity) {
+  taskSelect.replaceChildren();
+
+  const activityOption = document.createElement("option");
+  activityOption.value = "";
+  activityOption.textContent = activity
+    ? "Entire activity"
+    : "Select an activity first";
+  taskSelect.appendChild(activityOption);
+
+  for (const [index, taskPackage] of (activity?.handoff_packages || []).entries()) {
+    const option = document.createElement("option");
+    option.value = String(index);
+    const label = taskPackage.task_label || `Task ${index + 1}`;
+    const contextCount = taskPackage.contexts?.length || 0;
+    option.textContent = `${label} (${contextCount} context(s))`;
+    taskSelect.appendChild(option);
+  }
+}
+
+function updateSelectedActivityInfo(resetTaskOptions = false) {
   const activities = latestHandoffData?.activities || [];
   const selectedIndex = Number(activitySelect.value);
-
   const activity = activities[selectedIndex];
 
   if (!activity || !Number.isInteger(selectedIndex)) {
+    if (resetTaskOptions) populateTaskSelect(null);
     selectedActivityInfo.textContent = "No activity selected.";
     return;
   }
 
-  const contexts = getActivityContexts(activity);
+  if (resetTaskOptions) populateTaskSelect(activity);
+
+  const selectedTask = taskSelect.value === ""
+    ? null
+    : activity.handoff_packages?.[Number(taskSelect.value)];
+  const contexts = selectedTask?.contexts || getActivityContexts(activity);
+  const label = selectedTask?.task_label || activity.label || "Selected activity";
 
   selectedActivityInfo.textContent =
-    `${activity.label || "Selected activity"} — ${contexts.length} context(s) will be sent.`;
+    `${label} \u2014 ${contexts.length} context(s) will be sent.`;
 }
 function renderActivities(result) {
   activityListEl.replaceChildren();
@@ -104,6 +126,7 @@ if (activities.length === 0) {
   option.value = "";
   option.textContent = "No activities available";
   activitySelect.appendChild(option);
+  populateTaskSelect(null);
 
   selectedActivityInfo.textContent = "No activity selected.";
 } else {
@@ -117,7 +140,7 @@ if (activities.length === 0) {
   });
 
   activitySelect.value = "0";
-  updateSelectedActivityInfo();
+  updateSelectedActivityInfo(true);
 }
 
   if (activities.length === 0) {
@@ -171,128 +194,6 @@ if (activities.length === 0) {
 // --------------------------------------------------
 // Capture and process browser contexts
 // --------------------------------------------------
-
-async function saveMobileConfig(showStatus = true) {
-  const rawServerUrl = mobileServerUrlInput.value.trim();
-  const pairingToken = mobilePairingTokenInput.value.trim();
-  if (!rawServerUrl || !pairingToken) {
-    throw new Error("Enter the laptop server address and pairing token.");
-  }
-
-  let serverUrl;
-  try {
-    serverUrl = new URL(rawServerUrl);
-  } catch (_error) {
-    throw new Error("Enter a valid server address, such as http://192.168.1.20:8000.");
-  }
-  if (!(["http:", "https:"].includes(serverUrl.protocol)) || serverUrl.pathname !== "/" || serverUrl.search || serverUrl.hash) {
-    throw new Error("Use the laptop server's root HTTP or HTTPS address.");
-  }
-
-  const config = {
-    serverUrl: serverUrl.origin,
-    pairingToken
-  };
-  await chrome.storage.local.set({
-    taskflowMobileServerUrl: config.serverUrl,
-    taskflowPairingToken: config.pairingToken
-  });
-  mobileServerUrlInput.value = config.serverUrl;
-  if (showStatus) setStatus("Mobile connection saved", "success");
-  return config;
-}
-
-async function mobileApiRequest(serverUrl, pairingToken, path, options = {}) {
-  const response = await fetch(`${serverUrl}${path}`, {
-    ...options,
-    headers: {
-      "X-Taskflow-Token": pairingToken,
-      ...(options.body ? { "Content-Type": "application/json" } : {}),
-      ...(options.headers || {})
-    }
-  });
-  if (!response.ok) {
-    let message = `Laptop server returned ${response.status}.`;
-    try {
-      const errorBody = await response.json();
-      if (typeof errorBody.detail === "string") message = errorBody.detail;
-    } catch (_error) {
-      // Keep the useful HTTP status when the server has no JSON error body.
-    }
-    throw new Error(message);
-  }
-  return response.status === 204 ? null : response.json();
-}
-
-async function loadMobileConfig() {
-  try {
-    const saved = await chrome.storage.local.get([
-      "taskflowMobileServerUrl",
-      "taskflowPairingToken"
-    ]);
-    mobileServerUrlInput.value = saved.taskflowMobileServerUrl || "";
-    mobilePairingTokenInput.value = saved.taskflowPairingToken || "";
-  } catch (error) {
-    console.warn("[TaskFlow] Could not load mobile connection settings:", error);
-  }
-}
-
-saveMobileConfigBtn.addEventListener("click", async () => {
-  try {
-    await saveMobileConfig();
-  } catch (error) {
-    setStatus(error.message, "error");
-  }
-});
-
-sendMobileBtn.addEventListener("click", async () => {
-  if (!latestCapture || !latestCapture.contexts.length) return;
-  sendMobileBtn.disabled = true;
-  setStatus("Finding TaskFlow on Android…", "loading");
-
-  try {
-    const config = await saveMobileConfig(false);
-    const deviceResponse = await mobileApiRequest(
-      config.serverUrl,
-      config.pairingToken,
-      "/devices"
-    );
-    const androidDevices = (deviceResponse.devices || [])
-      .filter((device) => /taskflow android/i.test(device.device_name || ""))
-      .sort((left, right) => right.last_seen - left.last_seen);
-    if (!androidDevices.length) {
-      throw new Error("Open TaskFlow Android and tap Receive Handoff first.");
-    }
-
-    setStatus("Generating and sending activity handoff…", "loading");
-    const result = await mobileApiRequest(
-      config.serverUrl,
-      config.pairingToken,
-      "/handoff/generate",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          capture: latestCapture,
-          target_device_id: androidDevices[0].device_id
-        })
-      }
-    );
-    setStatus(
-      `Handoff sent: ${result.activity_count} activity, ${result.context_count} context(s).`,
-      "success"
-    );
-  } catch (error) {
-    console.error("[TaskFlow] Send to Mobile failed:", error);
-    const message = error instanceof TypeError
-      ? "Could not reach the laptop server. Check the address, same Wi-Fi, and Windows Firewall."
-      : error.message || "Unknown error";
-    setStatus(`Send to Mobile failed: ${message}`, "error");
-  } finally {
-    sendMobileBtn.disabled = !latestCapture?.contexts?.length;
-  }
-});
-
-loadMobileConfig();
 
 captureBtn.addEventListener("click", async () => {
   captureBtn.disabled = true;
@@ -542,6 +443,10 @@ handoffFile.addEventListener("change", async () => {
   }
 });
 activitySelect.addEventListener("change", () => {
+  updateSelectedActivityInfo(true);
+});
+
+taskSelect.addEventListener("change", () => {
   updateSelectedActivityInfo();
 });
 // ==================================================
@@ -1059,11 +964,18 @@ if (!Number.isInteger(selectedIndex) || !activity) {
 
         // Current API format: activity.handoff_package
         // Older formats are retained as fallbacks.
-        const sourcePackage =
-  activity.handoff_package ||
-  activity.activity_handoff_package;
+        const selectedTaskIndex = taskSelect.value;
+        const selectedTask = selectedTaskIndex === ""
+          ? null
+          : activity.handoff_packages?.[Number(selectedTaskIndex)];
+        if (selectedTaskIndex !== "" && !selectedTask) {
+          throw new Error("The selected task package is unavailable.");
+        }
 
-const contexts = getActivityContexts(activity);
+        const sourcePackage = selectedTask ||
+          activity.handoff_package ||
+          activity.activity_handoff_package;
+        const contexts = selectedTask?.contexts || getActivityContexts(activity);
 
         if (contexts.length === 0) {
           throw new Error(
@@ -1074,6 +986,7 @@ const contexts = getActivityContexts(activity);
         // Build the package expected by the cloud server.
         const activityPackage = {
           activity_id: String(
+            selectedTask?.task_id ||
             sourcePackage?.activity_id ||
             activity.activity_id ||
             activity.task_id ||
@@ -1081,13 +994,17 @@ const contexts = getActivityContexts(activity);
           ),
 
           label:
+            selectedTask?.task_label ||
             sourcePackage?.activity_label ||
+            sourcePackage?.task_label ||
             activity.activity_label ||
             activity.label ||
             "TaskFlow Activity",
 
           description:
+            selectedTask?.task_description ||
             sourcePackage?.activity_description ||
+            sourcePackage?.task_description ||
             activity.activity_description ||
             activity.description ||
             "",
@@ -1104,7 +1021,9 @@ const contexts = getActivityContexts(activity);
         }
 
         setStatus(
-          "Sending activity to target device…",
+          selectedTask
+            ? "Sending selected task to target device..."
+            : "Sending activity to target device...",
           "loading"
         );
 
@@ -1122,7 +1041,7 @@ const contexts = getActivityContexts(activity);
 );
 
         setStatus(
-          `Activity sent: ${result.context_count} context(s).`,
+          `${selectedTask ? "Task" : "Activity"} sent: ${result.context_count} context(s).`,
           "success"
         );
 

@@ -107,12 +107,27 @@ def process_contexts(request: ContextProcessingRequest):
 
         contexts = load_contexts(session_data)
         if not contexts:
-                    raise HTTPException(
-                        status_code=400,
-                        detail="No valid contexts were found.",
-                    )
-        # Enrich Google Sheets contexts using the existing Sheets API adapter.
-        sheets_adapter = GoogleSheetsAdapter()
+            raise HTTPException(
+                status_code=400,
+                detail="No valid contexts were found.",
+            )
+        # Enrich Sheets only when a Sheets URL is present. Missing or expired
+        # Google credentials must not prevent ordinary browser contexts from
+        # being grouped into tasks and activities.
+        sheets_adapter = None
+        has_spreadsheet = any(
+            GoogleSheetsAdapter.extract_spreadsheet_id(context.url)
+            for context in contexts
+        )
+        if has_spreadsheet:
+            try:
+                sheets_adapter = GoogleSheetsAdapter()
+            except Exception as error:
+                logger.warning(
+                    "Google Sheets enrichment unavailable; continuing with "
+                    "captured browser data: %s",
+                    error,
+                )
 
         for context in contexts:
             print(
@@ -122,17 +137,25 @@ def process_contexts(request: ContextProcessingRequest):
                 "| Domain:", context.domain,
                 "| URL:", context.url
             )
-            spreadsheet_id = sheets_adapter.extract_spreadsheet_id(
+            spreadsheet_id = GoogleSheetsAdapter.extract_spreadsheet_id(
                 context.url
             )
 
-            if spreadsheet_id:
+            if spreadsheet_id and sheets_adapter is not None:
                 logging.info(
                     "Reading Google Sheets context: %s",
                     context.context_id
                 )
 
-                spreadsheet_data = sheets_adapter.extract(context.url)
+                try:
+                    spreadsheet_data = sheets_adapter.extract(context.url)
+                except Exception as error:
+                    logger.warning(
+                        "Could not enrich spreadsheet context %s: %s",
+                        context.context_id,
+                        error,
+                    )
+                    continue
 
                 if spreadsheet_data:
                     context.interaction_state["spreadsheet_data"] = (
@@ -187,6 +210,10 @@ def process_contexts(request: ContextProcessingRequest):
             context.context_id: context
             for context in contexts
         }
+        task_lookup = {
+            task.task_id: task
+            for task in tasks
+        }
 
         processed_activities = []
 
@@ -225,6 +252,40 @@ def process_contexts(request: ContextProcessingRequest):
                 optimized_states,
             ).to_dict()
 
+            # Preserve task-level handoffs in addition to the unified activity
+            # package so the extension can send one selected task by itself.
+            task_handoff_packages = []
+            for task_id in activity.task_ids:
+                task = task_lookup.get(task_id)
+                if task is None:
+                    continue
+
+                task_contexts = [
+                    context_lookup[context_id]
+                    for context_id in task.context_ids
+                    if context_id in context_lookup
+                ]
+                if not task_contexts:
+                    continue
+
+                task_state_report = (
+                    state_selector.select_for_task_with_report(task_contexts)
+                )
+                task_selected_states = task_state_report["selected_states"]
+                if not task_selected_states:
+                    continue
+
+                task_selection_report = minimum_context_selector.select(
+                    task_contexts,
+                    task_selected_states,
+                )
+                task_handoff = handoff_builder.build(
+                    task,
+                    task_selection_report["selected_states"],
+                ).to_dict()
+                if task_handoff["contexts"]:
+                    task_handoff_packages.append(task_handoff)
+
             processed_activities.append({
                 "activity_id": activity.activity_id,
                 "label": activity.label,
@@ -237,6 +298,7 @@ def process_contexts(request: ContextProcessingRequest):
                 ),
 
                 "handoff_package": handoff_package,
+                "handoff_packages": task_handoff_packages,
 
                 "optimization": {
                     "context_count": len(activity_contexts),

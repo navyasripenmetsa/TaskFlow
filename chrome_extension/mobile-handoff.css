@@ -1,0 +1,42 @@
+.mobile-handoff-section {
+  margin-top: 14px;
+}
+
+.mobile-handoff-section .mobile-description {
+  margin: 0 0 12px;
+  color: #68708c;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.mobile-handoff-section .mobile-config {
+  margin-top: 12px;
+}
+
+.mobile-handoff-section .mobile-config label {
+  display: block;
+  margin-top: 10px;
+}
+
+.mobile-handoff-section .mobile-config input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 37px;
+  padding: 8px 10px;
+  border: 1px solid #dce2f2;
+  border-radius: 9px;
+  background: #fff;
+  color: #34416b;
+  font: inherit;
+  font-size: 12px;
+}
+
+.mobile-handoff-section .mobile-config input:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.13);
+  outline: none;
+}
+
+.mobile-handoff-section .mobile-config button {
+  margin-top: 10px;
+}
