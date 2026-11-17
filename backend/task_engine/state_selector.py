@@ -65,7 +65,31 @@ class StateSelector:
                 )
 
         if not sufficient_representations:
-            return None
+
+            fallback_representation = next(
+                (
+                    representation
+                    for representation in representations
+                    if representation.method
+                    == "original_context_fallback"
+                ),
+                None,
+            )
+
+            if fallback_representation is None:
+                return None
+
+            return SelectedState(
+                context_id=context.context_id,
+                representation_id=(
+                    fallback_representation.representation_id
+                ),
+                method=fallback_representation.method,
+                target=fallback_representation.target,
+                state=fallback_representation.state,
+                cost=fallback_representation.cost,
+                sufficiency_score=1.0,
+            )
 
         selected_representation, selected_result = min(
             sufficient_representations,

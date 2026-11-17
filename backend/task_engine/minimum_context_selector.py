@@ -158,60 +158,33 @@ class MinimumContextSelector:
 
         return matrix
 
+    
     def select(
         self,
         task_contexts: List[ContextItem],
         selected_states: List[SelectedState],
     ) -> Dict[str, Any]:
 
-        if not task_contexts or not selected_states:
-
-            return {
-                "selected_states": [],
-                "removed_context_ids": [],
-                "failed_context_ids": [
-                    context.context_id
-                    for context in task_contexts
-                ],
-                "coverage": 0.0,
-                "baseline_cost": 0.0,
-                "total_cost": 0.0,
-                "cost_reduction": 0.0,
-                "context_count": len(task_contexts),
-                "selected_context_count": 0,
-            }
-
-        information = self.extract_task_information(
-            task_contexts
-        )
-
         state_by_id = {
             state.context_id: state
             for state in selected_states
         }
 
-        context_by_id = {
-            context.context_id: context
-            for context in task_contexts
-        }
-
+        # Identify contexts for which a state was successfully selected.
         valid_ids = [
             context.context_id
             for context in task_contexts
             if context.context_id in state_by_id
         ]
 
+        # Contexts without a selected state are reported separately.
         failed_context_ids = [
             context.context_id
             for context in task_contexts
             if context.context_id not in state_by_id
         ]
 
-        information = {
-            context_id: information[context_id]
-            for context_id in valid_ids
-        }
-
+        # No valid states available.
         if not valid_ids:
 
             return {
@@ -226,68 +199,28 @@ class MinimumContextSelector:
                 "selected_context_count": 0,
             }
 
+        # IMPORTANT:
+        # Preserve every context that has a selected state.
+        # Do not eliminate tabs based on similarity or redundancy.
+
+        final_states = [
+            state_by_id[context_id]
+            for context_id in valid_ids
+        ]
+
+        information = self.extract_task_information(
+            [
+                context
+                for context in task_contexts
+                if context.context_id in valid_ids
+            ]
+        )
+
         weights = self._calculate_information_weights(
             information
         )
 
-        baseline_cost = sum(
-            state_by_id[context_id].cost
-            for context_id in valid_ids
-        )
-
         retained_ids = set(valid_ids)
-
-        similarity_matrix = self._calculate_similarity_matrix(
-            [
-                context_by_id[context_id]
-                for context_id in valid_ids
-            ]
-        )
-
-        # Calculate each context's strongest similarity
-        # with another context.
-        redundancy = {}
-
-        for i, context_id in enumerate(valid_ids):
-
-            similarities = [
-                float(similarity_matrix[i][j])
-                for j in range(len(valid_ids))
-                if i != j
-            ]
-
-            redundancy[context_id] = (
-                max(similarities)
-                if similarities
-                else 0.0
-            )
-
-        # Try the most redundant contexts first.
-        removal_order = sorted(
-            valid_ids,
-            key=lambda context_id: (
-                redundancy[context_id],
-                state_by_id[context_id].cost,
-            ),
-            reverse=True,
-        )
-
-        removed_context_ids = []
-
-        for context_id in removal_order:
-
-            candidate_ids = retained_ids - {context_id}
-
-            coverage = self._calculate_coverage(
-                candidate_ids,
-                information,
-                weights,
-            )
-
-            if coverage >= self.coverage_threshold:
-
-                retained_ids = candidate_ids
-                removed_context_ids.append(context_id)
 
         final_coverage = self._calculate_coverage(
             retained_ids,
@@ -295,26 +228,20 @@ class MinimumContextSelector:
             weights,
         )
 
-        final_states = [
-            state_by_id[context_id]
-            for context_id in valid_ids
-            if context_id in retained_ids
-        ]
-
-        total_cost = sum(
+        baseline_cost = sum(
             state.cost
             for state in final_states
         )
 
-        cost_reduction = (
-            (baseline_cost - total_cost) / baseline_cost
-            if baseline_cost > 0
-            else 0.0
-        )
+        total_cost = baseline_cost
+
+        # No contexts are removed, so context-removal cost
+        # reduction is zero.
+        cost_reduction = 0.0
 
         return {
             "selected_states": final_states,
-            "removed_context_ids": removed_context_ids,
+            "removed_context_ids": [],
             "failed_context_ids": failed_context_ids,
             "coverage": final_coverage,
             "baseline_cost": baseline_cost,

@@ -1,4 +1,4 @@
-fastapi
+﻿fastapi
 uvicorn
 sentence-transformers
 numpy
@@ -7,3 +7,6 @@ nltk
 yake
 openai
 python-dotenv
+google-api-python-client
+google-auth
+google-auth-oauthlib

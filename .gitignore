@@ -8,3 +8,17 @@ __pycache__/
 *.py[cod]
 .venv/
 .env
+# Local database
+*.db
+
+# OAuth token backups
+token_backup*.json
+token_before_*.json
+
+# Build artifacts
+build/
+dist/
+# Native host Python cache
+native_host/__pycache__/
+# Generated native messaging manifest contains machine-specific paths and extension ID
+native_host/com.taskflow.native.json
