@@ -4,3 +4,6 @@ sentence-transformers
 numpy
 scikit-learn
 nltk
+yake
+openai
+python-dotenv

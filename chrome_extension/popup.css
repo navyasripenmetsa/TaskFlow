@@ -20,6 +20,7 @@ button {
 }
 button:disabled { opacity: .5; cursor: not-allowed; }
 .primary { width: 100%; background: #111827; color: white; border-color: #111827; }
+.mobile-send { margin-top: 8px; background: #2457a6; border-color: #2457a6; }
 .secondary { width: 100%; margin-top: 12px; }
 .status { margin: 12px 0 4px; font-size: 13px; color: #475467; }
 .status.success { color: #067647; }
@@ -32,6 +33,9 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .tab-domain, .tab-meta { margin-top: 4px; font-size: 12px; color: #667085; }
 details { margin-top: 14px; }
 summary { cursor: pointer; font-size: 13px; font-weight: 700; }
+.mobile-config label { display: block; margin-top: 10px; font-size: 12px; font-weight: 600; color: #475467; }
+.mobile-config input { width: 100%; margin-top: 5px; padding: 9px; border: 1px solid #d0d5dd; border-radius: 7px; font: inherit; }
+.mobile-config button { width: 100%; margin-top: 9px; }
 pre {
   max-height: 260px;
   overflow: auto;

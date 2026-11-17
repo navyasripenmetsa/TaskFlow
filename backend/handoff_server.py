@@ -1,12 +1,20 @@
 import secrets
+from threading import RLock
 from typing import Any
-from fastapi import FastAPI, Header, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel, Field
 import time
 
 
 app = FastAPI(title="TaskFlow Handoff Server")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "X-Taskflow-Token"],
+)
 
 # Generate a temporary pairing token when the server starts.
 PAIRING_TOKEN = secrets.token_urlsafe(24)
@@ -17,14 +25,22 @@ handoff_store: dict[str, Any] = {}
 registered_devices: dict[str, dict[str, Any]] = {}
 # Activity packages waiting for a particular device.
 device_inboxes: dict[str, dict[str, Any]] = {}
+# Android receives the complete activities document through this queue.
+android_handoff_queues: dict[str, list[dict[str, Any]]] = {}
+_state_lock = RLock()
 
 class HandoffRequest(BaseModel):
     activity_package: dict[str, Any] = Field(...)
     target_device_id: str | None = None
 class DeviceRegistration(BaseModel):
-    device_id: str
-    device_name: str
+    device_id: str = Field(..., min_length=1, max_length=128)
+    device_name: str = Field(..., min_length=1, max_length=128)
     user_agent: str = ""
+
+
+class GenerateHandoffRequest(BaseModel):
+    capture: dict[str, Any]
+    target_device_id: str = Field(..., min_length=1, max_length=128)
 
 def verify_token(token: str | None) -> None:
     if not token or not secrets.compare_digest(token, PAIRING_TOKEN):
@@ -37,7 +53,13 @@ def health():
 
 
 @app.get("/pair")
-def pair():
+def pair(request: Request):
+    # Never disclose the bearer token to another device on the LAN.
+    if request.client is None or request.client.host not in {"127.0.0.1", "::1"}:
+        raise HTTPException(
+            status_code=403,
+            detail="Pairing token is available only in the server console",
+        )
     return {
         "service": "TaskFlow",
         "pairing_token": PAIRING_TOKEN
@@ -61,19 +83,70 @@ def receive_handoff(
             detail="Invalid activity handoff package"
         )
 
-    handoff_store["latest"] = package
+    with _state_lock:
+        handoff_store["latest"] = package
     if request.target_device_id:
+        with _state_lock:
             if request.target_device_id not in registered_devices:
                 raise HTTPException(
                     status_code=404,
                     detail="Target device is not registered"
                 )
-
             device_inboxes[request.target_device_id] = package
     return {
         "success": True,
         "activity_id": package["activity_id"],
         "context_count": len(package["contexts"])
+    }
+
+
+@app.post("/handoff/generate")
+def generate_and_send_handoff(
+    request: GenerateHandoffRequest,
+    x_taskflow_token: str | None = Header(default=None),
+):
+    """Run the existing local inference pipeline and queue its Android JSON."""
+    verify_token(x_taskflow_token)
+    device_id = request.target_device_id
+    with _state_lock:
+        if device_id not in registered_devices:
+            raise HTTPException(status_code=404, detail="Target device is not registered")
+
+    try:
+        from backend.handoff_pipeline import (
+            HandoffGenerationError,
+            generate_activity_handoff,
+        )
+
+        document = generate_activity_handoff(request.capture)
+    except HandoffGenerationError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Handoff generation failed: {error}",
+        ) from error
+
+    handoff_id = secrets.token_urlsafe(12)
+    with _state_lock:
+        queue = android_handoff_queues.setdefault(device_id, [])
+        if len(queue) >= 20:
+            raise HTTPException(
+                status_code=429,
+                detail="The device inbox is full. Receive or clear pending handoffs first.",
+            )
+        queue.append({"handoff_id": handoff_id, "document": document})
+
+    activities = document["activities"]
+    context_count = sum(
+        len(activity["activity_handoff_package"]["contexts"])
+        for activity in activities
+    )
+    return {
+        "success": True,
+        "handoff_id": handoff_id,
+        "activity_count": len(activities),
+        "context_count": context_count,
     }
 
 
@@ -83,13 +156,14 @@ def get_handoff(
 ):
     verify_token(x_taskflow_token)
 
-    if "latest" not in handoff_store:
-        raise HTTPException(
-            status_code=404,
-            detail="No handoff package available"
-        )
+    with _state_lock:
+        if "latest" not in handoff_store:
+            raise HTTPException(
+                status_code=404,
+                detail="No handoff package available"
+            )
 
-    return handoff_store["latest"]
+        return handoff_store["latest"]
 
 @app.get("/receiver", response_class=HTMLResponse)
 def mobile_receiver():
@@ -328,12 +402,13 @@ def register_device(
 ):
     verify_token(x_taskflow_token)
 
-    registered_devices[request.device_id] = {
-        "device_id": request.device_id,
-        "device_name": request.device_name,
-        "user_agent": request.user_agent,
-        "last_seen": time.time()
-    }
+    with _state_lock:
+        registered_devices[request.device_id] = {
+            "device_id": request.device_id,
+            "device_name": request.device_name,
+            "user_agent": request.user_agent,
+            "last_seen": time.time()
+        }
 
     return {
         "success": True,
@@ -349,10 +424,10 @@ def device_heartbeat(
 ):
     verify_token(x_taskflow_token)
 
-    if device_id not in registered_devices:
-        raise HTTPException(status_code=404, detail="Device not registered")
-
-    registered_devices[device_id]["last_seen"] = time.time()
+    with _state_lock:
+        if device_id not in registered_devices:
+            raise HTTPException(status_code=404, detail="Device not registered")
+        registered_devices[device_id]["last_seen"] = time.time()
 
     return {"success": True}
 
@@ -364,12 +439,50 @@ def list_devices(
     verify_token(x_taskflow_token)
 
     now = time.time()
-    online_devices = [
-        device for device in registered_devices.values()
-        if now - device["last_seen"] <= 30
-    ]
+    with _state_lock:
+        online_devices = [
+            dict(device) for device in registered_devices.values()
+            if now - device["last_seen"] <= 30
+        ]
 
     return {"devices": online_devices}
+
+
+@app.get("/devices/{device_id}/handoffs/next")
+def get_next_android_handoff(
+    device_id: str,
+    x_taskflow_token: str | None = Header(default=None),
+):
+    verify_token(x_taskflow_token)
+    with _state_lock:
+        device = registered_devices.get(device_id)
+        if device is None:
+            raise HTTPException(status_code=404, detail="Device not registered")
+
+        device["last_seen"] = time.time()
+        queue = android_handoff_queues.get(device_id, [])
+        if not queue:
+            return Response(status_code=204)
+        return queue[0]
+
+
+@app.post("/devices/{device_id}/handoffs/{handoff_id}/ack")
+def acknowledge_android_handoff(
+    device_id: str,
+    handoff_id: str,
+    x_taskflow_token: str | None = Header(default=None),
+):
+    verify_token(x_taskflow_token)
+    with _state_lock:
+        queue = android_handoff_queues.get(device_id)
+        if queue is None:
+            raise HTTPException(status_code=404, detail="No pending handoff for this device")
+
+        for index, handoff in enumerate(queue):
+            if secrets.compare_digest(handoff["handoff_id"], handoff_id):
+                del queue[index]
+                return {"success": True, "handoff_id": handoff_id}
+    raise HTTPException(status_code=404, detail="Handoff is no longer pending")
 
 @app.get("/devices/{device_id}/handoff")
 def get_device_handoff(
@@ -378,11 +491,12 @@ def get_device_handoff(
 ):
     verify_token(x_taskflow_token)
 
-    if device_id not in device_inboxes:
-        raise HTTPException(
-            status_code=404,
-            detail="No activity waiting for this device"
-        )
+    with _state_lock:
+        if device_id not in device_inboxes:
+            raise HTTPException(
+                status_code=404,
+                detail="No activity waiting for this device"
+            )
 
-    package = device_inboxes.pop(device_id)
-    return package
+        package = device_inboxes.pop(device_id)
+        return package

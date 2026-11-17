@@ -585,6 +585,13 @@ class ActivityInferenceEngine:
         tasks: List[TaskCandidate],
     ) -> tuple:
 
+        if len(tasks) == 1:
+            task = tasks[0]
+            return (
+                task.label or "Captured task",
+                task.description or f"Continue {task.label or 'the captured task'}.",
+            )
+
         labels = [
             task.label
             for task in tasks

@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import List, Set
 
 from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 from .models import ContextItem
 
@@ -32,7 +33,12 @@ class FeatureExtractor:
     """
 
     def __init__(self):
-        self.stopwords = set(stopwords.words("english"))
+        try:
+            self.stopwords = set(stopwords.words("english"))
+        except LookupError:
+            # NLTK corpora are not installed by pip. Keep local inference
+            # usable on a fresh laptop without requiring a separate download.
+            self.stopwords = set(ENGLISH_STOP_WORDS)
 
     def extract(
         self,

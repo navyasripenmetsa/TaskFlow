@@ -12,6 +12,7 @@
     <p class="subtitle">Capture tab metadata and visible page text in your team's ContextItem format.</p>
 
     <button id="captureBtn" class="primary">Capture Context</button>
+    <button id="sendMobileBtn" class="primary mobile-send" disabled>Send to Mobile</button>
     <button id="handoffBtn" class="primary">
     Handoff Activity
     </button>
@@ -24,6 +25,15 @@
     <div id="status" class="status">Ready</div>
     <div id="summary" class="summary">No capture yet.</div>
     <div id="tabList" class="tab-list"></div>
+
+    <details class="mobile-config">
+      <summary>Mobile connection</summary>
+      <label for="serverUrlInput">Laptop server address</label>
+      <input id="serverUrlInput" type="url" placeholder="http://192.168.x.x:8000" autocomplete="url" />
+      <label for="pairingTokenInput">Pairing token</label>
+      <input id="pairingTokenInput" type="password" placeholder="Token shown by the laptop server" autocomplete="off" />
+      <button id="saveMobileConfigBtn" type="button">Save connection</button>
+    </details>
 
     <details>
       <summary>Raw JSON</summary>

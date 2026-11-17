@@ -1,6 +1,10 @@
 let latestCapture = null;
 const captureBtn = document.getElementById("captureBtn");
+const sendMobileBtn = document.getElementById("sendMobileBtn");
 const handoffBtn = document.getElementById("handoffBtn");
+const serverUrlInput = document.getElementById("serverUrlInput");
+const pairingTokenInput = document.getElementById("pairingTokenInput");
+const saveMobileConfigBtn = document.getElementById("saveMobileConfigBtn");
 const handoffFile = document.getElementById("handoffFile");
 const copyBtn = document.getElementById("copyBtn");
 const downloadBtn = document.getElementById("downloadBtn");
@@ -44,7 +48,130 @@ function renderCapture(capture) {
 
   copyBtn.disabled = false;
   downloadBtn.disabled = false;
+  sendMobileBtn.disabled = !capture.contexts.length;
 }
+
+async function saveMobileConfig(showStatus = true) {
+  const rawServerUrl = serverUrlInput.value.trim();
+  const pairingToken = pairingTokenInput.value.trim();
+  if (!rawServerUrl || !pairingToken) {
+    throw new Error("Enter the laptop server address and pairing token.");
+  }
+
+  let serverUrl;
+  try {
+    serverUrl = new URL(rawServerUrl);
+  } catch (_error) {
+    throw new Error("Enter a valid server address, such as http://192.168.1.20:8000.");
+  }
+  if (!(["http:", "https:"].includes(serverUrl.protocol)) || serverUrl.pathname !== "/" || serverUrl.search || serverUrl.hash) {
+    throw new Error("Use the laptop server's root HTTP or HTTPS address.");
+  }
+
+  const config = {
+    serverUrl: serverUrl.origin,
+    pairingToken
+  };
+  await chrome.storage.local.set({
+    taskflowMobileServerUrl: config.serverUrl,
+    taskflowPairingToken: config.pairingToken
+  });
+  serverUrlInput.value = config.serverUrl;
+  if (showStatus) setStatus("Mobile connection saved", "success");
+  return config;
+}
+
+async function mobileApiRequest(serverUrl, pairingToken, path, options = {}) {
+  const response = await fetch(`${serverUrl}${path}`, {
+    ...options,
+    headers: {
+      "X-Taskflow-Token": pairingToken,
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers || {})
+    }
+  });
+  if (!response.ok) {
+    let message = `Laptop server returned ${response.status}.`;
+    try {
+      const errorBody = await response.json();
+      if (typeof errorBody.detail === "string") message = errorBody.detail;
+    } catch (_error) {
+      // Keep the useful HTTP status when the server has no JSON error body.
+    }
+    throw new Error(message);
+  }
+  return response.status === 204 ? null : response.json();
+}
+
+async function loadMobileConfig() {
+  try {
+    const saved = await chrome.storage.local.get([
+      "taskflowMobileServerUrl",
+      "taskflowPairingToken"
+    ]);
+    serverUrlInput.value = saved.taskflowMobileServerUrl || "";
+    pairingTokenInput.value = saved.taskflowPairingToken || "";
+  } catch (error) {
+    console.warn("[TaskFlow] Could not load mobile connection settings:", error);
+  }
+}
+
+saveMobileConfigBtn.addEventListener("click", async () => {
+  try {
+    await saveMobileConfig();
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+});
+
+sendMobileBtn.addEventListener("click", async () => {
+  if (!latestCapture || !latestCapture.contexts.length) return;
+  sendMobileBtn.disabled = true;
+  setStatus("Finding TaskFlow on Android…", "loading");
+
+  try {
+    const config = await saveMobileConfig(false);
+    const deviceResponse = await mobileApiRequest(
+      config.serverUrl,
+      config.pairingToken,
+      "/devices"
+    );
+    const androidDevices = (deviceResponse.devices || [])
+      .filter((device) => /taskflow android/i.test(device.device_name || ""))
+      .sort((left, right) => right.last_seen - left.last_seen);
+    if (!androidDevices.length) {
+      throw new Error("Open TaskFlow Android and tap Receive Handoff first.");
+    }
+
+    setStatus("Generating and sending activity handoff…", "loading");
+    const result = await mobileApiRequest(
+      config.serverUrl,
+      config.pairingToken,
+      "/handoff/generate",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          capture: latestCapture,
+          target_device_id: androidDevices[0].device_id
+        })
+      }
+    );
+    setStatus(
+      `Handoff sent: ${result.activity_count} activity, ${result.context_count} context(s).`,
+      "success"
+    );
+  } catch (error) {
+    console.error("[TaskFlow] Send to Mobile failed:", error);
+    const message = error instanceof TypeError
+      ? "Could not reach the laptop server. Check the address, same Wi-Fi, and Windows Firewall."
+      : error.message || "Unknown error";
+    setStatus(`Send to Mobile failed: ${message}`, "error");
+  } finally {
+    sendMobileBtn.disabled = !latestCapture?.contexts?.length;
+  }
+});
+
+loadMobileConfig();
 
 captureBtn.addEventListener("click", async () => {
   captureBtn.disabled = true;

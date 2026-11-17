@@ -33,7 +33,7 @@ class HandoffParser {
             handoffPackages = (0 until packages.length()).map { index ->
                 parseTask(packages.requiredObject(index))
             },
-            activityHandoffPackage = json.optJSONObject("activity_handoff_package")
+            activityHandoffPackage = json.optionalObject("activity_handoff_package")
                 ?.let(::parseUnifiedActivity)
         )
     }
@@ -102,6 +102,15 @@ private fun JSONObject.requiredArray(name: String): JSONArray =
 
 private fun JSONObject.requiredObject(name: String): JSONObject =
     optJSONObject(name) ?: throw JSONException("Missing required object '$name'.")
+
+private fun JSONObject.optionalObject(name: String): JSONObject? {
+    val value = opt(name)
+    if (value == null || value === JSONObject.NULL) {
+        return null
+    }
+    return value as? JSONObject
+        ?: throw JSONException("Optional field '$name' must be an object.")
+}
 
 private fun JSONObject.requiredDouble(name: String): Double {
     val value = opt(name)
